@@ -223,7 +223,8 @@
     if (decision === 'full') return r.importance === PROTECTED_IMPORTANCE ? 'Protected (importance 5): never cut.' : 'Fits: kept in full.';
     const mine = steps.filter((s) => s.taskId === r.id);
     const s = mine[mine.length - 1];
-    const why = s ? 'importance ' + s.level + ' was the lowest among tasks due by ' + fmtT(s.Tstar, cfg) + ', which was short by ' + s.need + ' min.' : '';
+    // "still scheduled" = tasks that were really candidates for this cut (already-deferred tasks are not counted).
+    const why = s ? 'importance ' + s.level + ' was the lowest among the tasks still scheduled by ' + fmtT(s.Tstar, cfg) + ' (tasks already deferred are not counted); that deadline was short by ' + s.need + ' min.' : '';
     if (decision === 'deferred') return 'Deferred: ' + why;
     return 'Reduced ' + r.remaining + '\u2192' + r.a + ' min: ' + why;
   }
