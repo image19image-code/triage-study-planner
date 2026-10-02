@@ -103,5 +103,17 @@ test('UI-12 regression: critical 45/25/0 -> 8h 50m needed / 6h available / 2h 50
   assert.strictEqual((c.match(/\u2192/g) || []).length, 2, c);
 });
 
+test('UI-13 status bar: dark = covered, red = missing, proportions match the numbers (demo 8h of 10h)', () => {
+  const h = boot().els.status.innerHTML;
+  assert.ok(h.includes('class="have" style="width:80%"') && h.includes('class="gap" style="width:20%"'), h);
+  const r = fell({ math: '45', eng: '25', quiz: '0' }).els.status.innerHTML;        // 530 needed, 360 covered, 170 missing
+  assert.ok(r.includes('style="width:67.9%"') && r.includes('style="width:32.1%"'), r);
+});
+test('UI-14 only the first priority block says "Start here"; Defer zone never claims time', () => {
+  const a = boot(); const b = a.els.blocks.innerHTML;
+  assert.strictEqual((b.match(/Start here/g) || []).length, 1); assert.ok(b.indexOf('Start here') < b.indexOf('English essay'));
+  assert.ok(/Defer<span class="hint">left out of this plan/.test(a.els.triage.innerHTML));
+});
+
 console.log('UI tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
