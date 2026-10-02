@@ -16,7 +16,7 @@ function boot() {
     while ((m = re.exec(els.behind.innerHTML))) out.push({ value: doc.values[m[2]] !== undefined ? doc.values[m[2]] : m[1], dataset: { id: m[2] } });
     return out;
   };
-  const ctx = { TriageEngine: TE, document: doc, console };
+  const ctx = { TriageEngine: TE, TaskInput: require(path.join(DIR, 'engine', 'task-input.js')), document: doc, console };
   try { vm.runInNewContext(code + ';this.__S=()=>S;this.__R=()=>R;', ctx); } catch (e) { errors.push(e.message); }
   return { els, doc, ctx, errors };
 }
