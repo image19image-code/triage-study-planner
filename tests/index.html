@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Triage: study planner that tells the truth</title>
+<style>
+/* ---- Design system. Red means ONE thing: not enough time (or an input error). Amber = reduced / recovery. Green = protected. Neutral = everything else. ---- */
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#16171a;--ink2:#55575e;--line:#e4e2da;--tint:#f0eee8;--red:#b42318;--red-bg:#fdecea;--amber:#8a5300;--amber-bg:#fff3dc;--green:#136c3a;--green-bg:#e4f4ea;--focus:#2457d6;
+--r1:8px;--r2:14px;--r3:20px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:40px;
+--shadow:0 1px 2px rgba(20,20,20,.05),0 10px 28px -14px rgba(20,20,20,.18);
+--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#131416;--surface:#1c1d20;--ink:#f2f0ea;--ink2:#a9abb2;--line:#32343a;--tint:#25262a;--red:#ff8f84;--red-bg:#3a1f1c;--amber:#ffc872;--amber-bg:#352a12;--green:#7fd9a0;--green-bg:#15301f;--focus:#8fb0ff;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.6)}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);overflow-wrap:anywhere}
+main{max-width:760px;margin:0 auto;padding:var(--s5) var(--s4) 72px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:var(--r1)}
+[hidden]{display:none!important}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mut{color:var(--ink2);font-size:14px}
+/* hero */
+.hero{padding:var(--s4) 0 var(--s5)}
+h1{margin:0;font:600 clamp(40px,10vw,60px)/1 var(--serif);letter-spacing:-.03em}
+.tagline{margin:var(--s2) 0 0;font:italic 400 clamp(19px,4.5vw,24px)/1.25 var(--serif);color:var(--ink2)}
+.lead0{margin:var(--s4) 0 var(--s3);font-size:17px;max-width:34em}
+.legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);font-size:13px;color:var(--ink2)}
+.k{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.k.keep{background:var(--green)}.k.red{background:var(--amber)}.k.def{background:var(--ink2);opacity:.45}.k.have{background:var(--ink)}.k.gap{background:var(--red)}
+h2{margin:var(--s6) 0 var(--s3);font:600 12px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.count{margin-left:var(--s2);padding:2px 8px;border-radius:99px;background:var(--tint);letter-spacing:0;text-transform:none;font-size:12px;color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r2);padding:var(--s4);box-shadow:var(--shadow)}
+/* status: the core insight */
+.status{border-radius:var(--r3);padding:var(--s5);background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--ink);box-shadow:var(--shadow)}
+.status.bad{border-top-color:var(--red)}.status.warn{border-top-color:var(--amber)}.status.ok{border-top-color:var(--green)}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.big{margin:var(--s2) 0;font:600 clamp(38px,11vw,64px)/1 var(--serif);letter-spacing:-.03em}
+.status.bad .big{color:var(--red)}.status.warn .big{color:var(--amber)}.status.ok .big{color:var(--green)}
+.lead{color:var(--ink2);font-size:16px;max-width:36em}
+.bar{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--tint);margin:var(--s5) 0 var(--s2)}
+.bar span{display:block;height:100%}.bar .have{background:var(--ink)}.bar .gap{background:var(--red)}
+.key{display:flex;gap:var(--s4);font-size:12px;color:var(--ink2)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--line)}
+.nums b{display:block;font:600 clamp(24px,7vw,34px)/1.1 var(--serif);letter-spacing:-.02em}.nums span{font-size:13px;color:var(--ink2)}.nums .neg b{color:var(--red)}
+.status.fresh,.chg.fresh{animation:fresh .9s ease-out}@keyframes fresh{from{box-shadow:0 0 0 4px var(--focus)}to{box-shadow:var(--shadow)}}
+/* decisions */
+.zone{margin-bottom:var(--s5)}.zone:last-child{margin-bottom:0}
+.grp{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s2);font:600 17px/1.2 var(--serif)}
+.grp .hint{font:400 13px var(--sans);color:var(--ink2)}
+.dc{display:grid;grid-template-columns:1fr auto;gap:2px var(--s3);align-items:center;padding:var(--s3) var(--s4);margin-bottom:var(--s2);background:var(--tint);border-radius:var(--r1);border-left:4px solid var(--ink2)}
+.dc.keep{border-left-color:var(--green)}.dc.red{border-left-color:var(--amber)}.dc.def{border-left-color:var(--ink2);opacity:.9}.dc.def .dn{text-decoration:line-through;text-decoration-color:var(--ink2)}
+.dn{font-weight:600}.dt{grid-column:1/-1;font-size:14px;color:var(--ink2)}.dt b{color:var(--ink)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:var(--surface);color:var(--ink2);border:1px solid var(--line)}
+.dc.keep .tag{background:var(--green-bg);color:var(--green);border-color:transparent}.tag.go{background:var(--ink);color:var(--surface);border-color:transparent}.tag.risk{background:var(--red-bg);color:var(--red);border-color:transparent}
+details.why{grid-column:1/-1;margin-top:var(--s1)}
+details.why summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--focus);padding:6px 0;min-height:32px}
+details.why summary::-webkit-details-marker{display:none}details.why summary::after{content:"\203A";display:inline-block;transition:transform .15s}details.why[open] summary::after{transform:rotate(90deg)}
+details.why p{margin:var(--s1) 0 0;padding:var(--s3);background:var(--surface);border-radius:var(--r1);border-left:3px solid var(--focus);font-size:14px;color:var(--ink2);animation:reveal .16s ease-out}@keyframes reveal{from{opacity:0;transform:translateY(-3px)}}
+/* timeline */
+.tl{position:relative;padding-left:var(--s5)}.tl::before{content:"";position:absolute;left:6px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.blk{position:relative;display:flex;gap:var(--s4);align-items:baseline;padding:var(--s3) 0}
+.blk::before{content:"";position:absolute;left:-23px;top:19px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--ink2)}.blk.now::before{background:var(--ink);border-color:var(--ink)}
+.blk time{flex:0 0 112px;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:14px}.bn{font-weight:600}.dur{font-weight:400;color:var(--ink2);font-size:14px;margin:0 var(--s2)}
+.note{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+/* recovery */
+.rec{background:var(--amber-bg);border:1px solid var(--amber);border-radius:var(--r2);padding:var(--s5)}.rec-t{font:600 22px/1.2 var(--serif);margin-bottom:var(--s1)}
+.rec .mut{color:var(--ink2);margin-bottom:var(--s4)}.rec .fr{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-top:1px solid var(--line)}
+.rec button{margin-top:var(--s4)}.chg{border-left:4px solid var(--focus)}.chg .row{padding:var(--s2) 0;border-top:1px solid var(--line)}.chg .row:first-of-type{border-top:0}
+/* controls */
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:var(--r1);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 16px;min-height:42px;transition:background .12s,transform .06s,border-color .12s}
+button:hover{border-color:var(--ink2)}button:active{transform:translateY(1px)}button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button.primary{width:100%;background:var(--ink);color:var(--surface);border-color:var(--ink);padding:16px;font-size:16px;letter-spacing:.06em}button.primary:hover:not(:disabled){background:var(--ink2);border-color:var(--ink2)}
+button.recover{width:100%;background:var(--surface);color:var(--amber);border:2px solid var(--amber);padding:14px;letter-spacing:.06em}button.recover:hover{background:var(--amber);color:var(--surface)}
+input[type=text],input[type=number],select{font:inherit;width:100%;min-width:0;min-height:42px;padding:9px 12px;border-radius:var(--r1);border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=number]{width:92px}input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+label{display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:var(--ink2)}
+.entry{margin-top:var(--s3);padding:var(--s4);background:var(--tint);border-radius:var(--r2)}.frm{display:grid;grid-template-columns:2fr 1fr 1.2fr 1fr;gap:var(--s3)}.frm .wide{grid-column:1/-1}
+.err{color:var(--red);font-size:14px;font-weight:600;margin-top:var(--s2)}.err:empty{display:none}.ok{color:var(--green);font-size:14px;font-weight:600;margin-top:var(--s2)}.ok:empty{display:none}
+.av{margin:var(--s4) 0 var(--s2);max-width:300px}.hintline{font-size:13px;color:var(--ink2);margin:0 0 var(--s3)}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--line);animation:reveal .16s ease-out}.trow:first-child{border-top:0}
+.trow .mut{display:block}.trow button{min-height:36px;padding:4px 12px;font-size:13px;color:var(--ink2)}
+.empty{padding:var(--s5) var(--s3);text-align:center;color:var(--ink2)}.empty b{display:block;color:var(--ink);font:600 18px var(--serif)}
+.foot{margin-top:var(--s6);display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;font-size:13px;color:var(--ink2)}
+@media(max-width:620px){.frm{grid-template-columns:1fr 1fr}.blk{flex-direction:column;gap:2px}.blk time{flex-basis:auto}.status{padding:var(--s4)}.rec{padding:var(--s4)}.nums{gap:var(--s2)}}
+@media(max-width:360px){.frm{grid-template-columns:1fr}.nums{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <h1>Triage</h1>
+    <p class="tagline">Study planner that tells the truth.</p>
+    <p class="lead0">Tell it what you must do and the time you really have.</p>
+    <div class="legend" aria-label="Decision colours"><span><span class="k keep"></span>Protect</span><span><span class="k red"></span>Reduce</span><span><span class="k def"></span>Defer</span><span><span class="k gap"></span>Not enough time</span></div>
+  </header>
+  <div class="sr" id="announce" aria-live="polite"></div>
+  <div id="status" tabindex="-1"></div>
+  <div id="empty" class="card empty" hidden><b>Nothing planned yet</b>Add your tasks below, enter your study time, then press PLAN MY TIME.</div>
+
+  <h2 id="tt">Your tasks <span id="taskCount" class="count"></span></h2>
+  <div class="card" id="tasks">
+    <div id="taskList"></div>
+    <div id="demoNote" class="mut" style="margin-top:12px"></div>
+    <button type="button" id="useOwn" style="margin-top:12px">Use my own tasks</button>
+    <div id="form" hidden>
+      <div class="entry">
+        <div class="frm">
+          <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry lab report" aria-describedby="formErr"></div>
+          <div><label for="tEst">Time needed (min)</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 60" aria-describedby="formErr"></div>
+          <div><label for="tImp">Importance</label><select id="tImp"><option value="1">1 low</option><option value="2">2</option><option value="3" selected>3 normal</option><option value="4">4</option><option value="5">5 never cut</option></select></div>
+          <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today, 1 = tomorrow" aria-describedby="formErr"></div>
+          <div class="wide"><button type="button" id="addBtn">Add task</button></div>
+        </div>
+        <div class="err" id="formErr" role="alert"></div>
+        <div class="ok" id="formMsg" role="status"></div>
+      </div>
+      <div class="av"><label for="tAvail">Available study time per day (minutes)</label><input id="tAvail" type="text" inputmode="numeric" autocomplete="off" value="120" aria-describedby="availErr"></div>
+      <p class="hintline">Planning window: 15:00–22:00 each day. It is a fixed planning window, not your device clock (at most 7h/day count).</p>
+      <div class="err" id="availErr" role="alert"></div>
+      <div class="mut" id="planHint"></div>
+      <button type="button" class="primary" id="planBtn">PLAN MY TIME</button>
+    </div>
+  </div>
+
+  <div id="rest">
+    <h2>Triage</h2><div class="card" id="triage"></div>
+    <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
+    <h2>If you fall behind</h2><div id="behind"></div>
+    <div id="changes"></div>
+  </div>
+  <div class="foot"><button type="button" id="reset">Reset demo</button><span>Every decision comes from a deterministic engine. No AI makes them.</span></div>
+</main>
+
+<script src="engine/triage-engine.js"></script>
+<script src="engine/task-input.js"></script>
+<script>
+const run = TriageEngine.runTriageEngine;
+const T = (id, name, seq, day, est, imp, o = {}) => ({ id, name, seq, deadlineDay: day, deadlineTime: o.time, estimate: est, completed: 0, importance: imp, allOrNothing: !!o.aon });
+const demo = () => ({ now: 900, capacity: [120, 60, 60, 0, 60, 60, 60, 0, 60], tasks: [
+  T('math', 'Math homework', 1, 1, 45, 3, { aon: 1, time: 480 }), T('phys', 'Physics worksheet', 2, 2, 60, 2),
+  T('eng', 'English essay', 3, 3, 90, 3), T('quiz', 'Math quiz prep', 4, 4, 60, 4),
+  T('bio', 'Biology exam', 5, 5, 150, 5), T('chem', 'Chemistry lab', 6, 6, 45, 3), T('hist', 'History project', 7, 8, 150, 4)] });
+
+let S = demo(), R = run(S), prev = null, lastDone = {};
+let mode = 'demo', draft = [], nextId = 1, planned = true, flash = false, headText = '';
+const $ = (id) => document.getElementById(id);
+const fmt = (m) => { const h = Math.floor(m / 60), x = m % 60; return h && x ? h + 'h ' + x + 'm' : h ? h + 'h' : x + 'm'; };
+const hh = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const dayName = (d) => (d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : 'Day ' + d);
+const nm = (id) => S.tasks.find((t) => t.id === id).name;
+const dl = (s) => String(s).replace(/\bD(\d+)\b/g, (m, d) => (+d === 0 ? 'today' : +d === 1 ? 'tomorrow' : 'day ' + d));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ---- Reality check: the core insight. Bar = needed time; dark = covered by your time, red = missing. ----
+function renderStatus() {
+  const s = R.summary; let cls, head, sub;
+  if (R.status === 'impossible') { cls = 'bad'; head = 'Still impossible'; sub = 'Even after cutting everything allowed, you are short by ' + fmt(R.stillImpossible.need) + '. Add time or ask for an extension.'; }
+  else if (s.shortfall > 0) { cls = 'bad'; head = 'Short by ' + fmt(s.shortfall); sub = 'Your workload is not realistic. Triage below removes exactly that much.'; }
+  else if (R.gapsFinal.some((g) => g.gap >= -14)) { cls = 'warn'; head = 'Realistic, but no slack'; sub = 'Any slip will break the plan.'; }
+  else { cls = 'ok'; head = 'Realistic'; sub = 'Everything fits with room to spare.'; }
+  if (R.status === 'atRisk') sub += ' Some time slots are too fragmented to use: see "At risk" below.';
+  headText = head;
+  const scale = Math.max(s.workload, s.capacity, 1), pc = (x) => Math.round((x / scale) * 1000) / 10;
+  const covered = Math.min(s.workload, s.capacity), gap = Math.max(0, s.workload - s.capacity);
+  $('status').innerHTML = '<div class="status ' + cls + (flash ? ' fresh' : '') + '"><div class="eyebrow">Reality check</div><div class="big">' + head + '</div><div class="lead">' + sub + '</div>' +
+    '<div class="bar"><span class="have" style="width:' + pc(covered) + '%"></span><span class="gap" style="width:' + pc(gap) + '%"></span></div>' +
+    '<div class="key"><span><span class="k have"></span>Covered by your time</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
+    '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div></div>';
+}
+
+// ---- Decisions: three zones. The engine decided; the UI only presents (task, status, time, Why?). ----
+function renderTriage() {
+  const by = { full: [], reduced: [], deferred: [] }; R.tasks.forEach((t) => { if (by[t.decision]) by[t.decision].push(t); });
+  const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(dl(t.reason)) + '</p></details>';
+  const card = (cls, t, tag, time) => '<div class="dc ' + cls + '"><span class="dn">' + esc(t.name) + '</span>' + tag + '<span class="dt">' + time + '</span>' + why(t) + '</div>';
+  const zone = (title, hint, items) => (items.length ? '<div class="zone"><div class="grp">' + title + '<span class="hint">' + hint + '</span></div>' + items.join('') + '</div>' : '');
+  const keep = by.full.map((t) => card('keep', t, '<span class="tag">' + (t.protected ? 'PROTECTED' : 'FULL') + '</span>', fmt(t.allocated) + (t.atRisk ? ' <span class="tag risk">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '')));
+  const red = by.reduced.map((t) => card('red', t, '', '<span>' + fmt(t.remaining) + '</span> \u2192 <b>' + fmt(t.allocated) + '</b>'));
+  const def = by.deferred.map((t) => card('def', t, '<span class="tag">DEFERRED</span>', fmt(t.remaining) + ' not scheduled'));
+  let h = zone('Protect', 'kept in full', keep) + zone('Reduce', 'shortened to fit', red) + zone('Defer', 'left out of this plan', def);
+  if (R.overdue.length) h += zone('Overdue', 'set a new deadline or drop it', R.overdue.map((id) => '<div class="dc def"><span class="dn">' + esc(nm(id)) + '</span></div>'));
+  $('triage').innerHTML = h || '<span class="mut">Nothing to schedule.</span>';
+}
+
+function planDay() { return R.blocks.length ? Math.min(...R.blocks.map((b) => b.day)) : null; }
+function renderBlocks() {
+  const d = planDay();
+  if (d === null) { $('planTitle').textContent = 'Plan'; $('blocks').innerHTML = '<span class="mut">No blocks to schedule.</span>'; return; }
+  $('planTitle').textContent = dayName(d) + ': priority blocks';
+  let t = d === 0 ? Math.max(S.now, 900) : 900;
+  const rows = R.blocks.filter((b) => b.day === d).map((b, i) => {
+    const s = t; t += b.minutes;
+    return '<div class="blk' + (i === 0 ? ' now' : '') + '"><time>' + hh(s) + ' \u2013 ' + hh(t) + '</time><span class="bn">' + esc(nm(b.taskId)) + '<span class="dur">' + b.minutes + ' min</span>' + (i === 0 ? '<span class="tag go">Start here</span>' : '') + '</span></div>';
+  });
+  $('blocks').innerHTML = '<div class="tl">' + rows.join('') + '</div><div class="note">Times are a 15:00\u201322:00 planning window, not your device clock. Time is the constraint, not the number of tasks.</div>';
+}
+
+// ---- Recovery mode ----
+function renderBehind(open) {
+  const d = planDay();
+  if (d !== 0) { $('behind').innerHTML = '<div class="card mut">Nothing is planned for today. Come back when a session is due.</div>'; return; }
+  if (!open) {
+    $('behind').innerHTML = '<div class="rec"><div class="rec-t">Plans slip. That is expected.</div><div class="mut">Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty.</div><button type="button" class="recover" id="fb">I FELL BEHIND</button></div>';
+    $('fb').onclick = () => renderBehind(true); return;
+  }
+  const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
+  $('behind').innerHTML = '<div class="rec"><div class="rec-t">What actually happened today?</div><div class="mut">Enter the minutes you really worked on each block.</div>' + Object.keys(plannedMin).map((id) =>
+    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
+    '<button type="button" class="primary" id="rp">REPLAN</button></div>';
+  $('rp').onclick = () => {
+    const before = R, done = {};
+    document.querySelectorAll('#behind input').forEach((i) => { const t = S.tasks.find((x) => x.id === i.dataset.id); const add = Math.max(0, Math.round(+i.value || 0)); t.completed += add; done[i.dataset.id] = add; });
+    S.now = 1320; prev = before; lastDone = done; flash = true; R = run(S); render(); $('announce').textContent = 'Plan updated. ' + headText + '.';
+  };
+}
+
+const desc = (t) => t.decision === 'deferred' ? 'deferred' : t.decision === 'reduced' ? 'reduced to ' + fmt(t.allocated) : t.decision === 'done' ? 'done' : 'kept (' + fmt(t.allocated) + ')';
+// What the old plan still expected for a task after subtracting the minutes the student actually did.
+// A task only "changed" if the new allocation differs from that carried-forward expectation.
+const carried = (p) => Math.max(0, p.allocated - (lastDone[p.id] || 0));
+const was = (p) => carried(p) > 0 ? 'planned ' + fmt(carried(p)) : p.decision === 'deferred' ? 'deferred' : 'nothing more planned';
+function renderChanges() {
+  if (!prev) { $('changes').innerHTML = ''; return; }
+  const ch = R.tasks.map((t) => [t, prev.tasks.find((p) => p.id === t.id)]).filter(([t, p]) => t.allocated !== carried(p));
+  $('changes').innerHTML = '<h2>Your plan changed</h2><div class="card chg' + (flash ? ' fresh' : '') + '">' + (ch.length ? ch.map(([t, p]) => '<div class="row">' + esc(t.name) + ': <span class="mut">' + was(p) + '</span> \u2192 <b>' + desc(t) + '</b></div>').join('') : 'No change needed. You are on the plan.') +
+    '<div class="note">Rebuilt from what you actually did. Protected tasks were not touched.</div></div>';
+}
+
+// ---- Your tasks ----
+const dueLabel = (d, time) => dayName(d).toLowerCase() + (time !== undefined ? ' ' + hh(time) : '');
+const count = (n) => n + (n === 1 ? ' task' : ' tasks');
+function renderTasks() {
+  const demoMode = mode === 'demo';
+  $('form').hidden = demoMode; $('useOwn').hidden = !demoMode;
+  $('demoNote').textContent = demoMode ? 'Demo data (not real). Try I FELL BEHIND below, or press "Use my own tasks".' : '';
+  $('planBtn').disabled = !demoMode && draft.length === 0;
+  $('planHint').textContent = !demoMode && draft.length === 0 ? 'Add at least one task to enable planning.' : '';
+  const rows = demoMode ? S.tasks.map((t) => ({ id: t.id, name: t.name, estimate: t.estimate, importance: t.importance, days: t.deadlineDay, time: t.deadlineTime })) : draft;
+  $('taskCount').textContent = demoMode ? rows.length + ' demo tasks' : rows.length ? count(rows.length) + ' ready' : '0 tasks';
+  $('taskList').innerHTML = rows.length ? rows.map((r) => '<div class="trow"><span>' + esc(r.name) + ' <span class="mut">' + fmt(r.estimate) + ' \u00b7 importance ' + r.importance + ' \u00b7 due ' + dueLabel(r.days, r.time) + '</span></span>' +
+    (demoMode ? '' : '<button type="button" data-rm="' + esc(r.id) + '" aria-label="Remove task">Remove</button>') + '</div>').join('') : '<div class="empty"><b>0 tasks</b>Add your first task below.</div>';
+}
+function render() {
+  const show = mode === 'demo' || planned;
+  $('empty').hidden = show; $('status').hidden = !show; $('rest').hidden = !show;
+  renderTasks();
+  if (show) { renderStatus(); renderTriage(); renderBlocks(); renderBehind(false); renderChanges(); }
+  flash = false;
+}
+const invalidate = () => { planned = false; prev = null; lastDone = {}; };   // editing tasks => plan is rebuilt from scratch (no leftover progress)
+
+const FIELD = { name: 'tName', estimate: 'tEst', importance: 'tImp', days: 'tDays' };
+const setMsg = (text) => { $('formMsg').textContent = text; };
+const clearInvalid = () => ['tName', 'tEst', 'tImp', 'tDays', 'tAvail'].forEach((id) => $(id).removeAttribute('aria-invalid'));
+function markInvalid(ids) { clearInvalid(); ids.forEach((id) => $(id).setAttribute('aria-invalid', 'true')); if (ids.length) $(ids[0]).focus(); }
+['tName', 'tEst', 'tDays', 'tAvail'].forEach((id) => { $(id).oninput = () => $(id).removeAttribute('aria-invalid'); });
+
+$('useOwn').onclick = () => { mode = 'user'; draft = []; nextId = 1; invalidate(); clearInvalid(); $('formErr').textContent = ''; $('availErr').textContent = ''; setMsg(''); render(); $('tName').focus(); };
+$('taskList').onclick = (e) => {
+  const id = e && e.target && e.target.dataset && e.target.dataset.rm;
+  if (!id || mode !== 'user') return;
+  const gone = draft.find((t) => t.id === id); if (!gone) return;
+  const hadPlan = planned;
+  draft = draft.filter((t) => t.id !== id); invalidate(); render();
+  setMsg('Removed "' + gone.name + '". ' + count(draft.length) + ' left.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ''));
+};
+$('addBtn').onclick = () => {
+  if (mode !== 'user') return;
+  setMsg('');
+  if (draft.length >= TaskInput.LIMITS.MAX_TASKS) { $('formErr').textContent = 'You can plan at most ' + TaskInput.LIMITS.MAX_TASKS + ' tasks at a time.'; return; }
+  const v = TaskInput.validateTask({ name: $('tName').value, estimate: $('tEst').value, importance: $('tImp').value, days: $('tDays').value });
+  if (!v.ok) {
+    $('formErr').textContent = Object.values(v.errors).join(' ');
+    markInvalid(Object.keys(FIELD).filter((k) => v.errors[k]).map((k) => FIELD[k]));   // focus lands on the first wrong field, in form order
+    return;
+  }
+  const hadPlan = planned;
+  draft.push(Object.assign({ id: 'u' + (nextId++) }, v.task));
+  clearInvalid(); $('formErr').textContent = ''; $('tName').value = ''; $('tEst').value = ''; $('tDays').value = '';
+  invalidate(); render();
+  setMsg('Added "' + v.task.name + '". ' + count(draft.length) + ' ready.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ' Add more, or press PLAN MY TIME.'));
+  $('tName').focus();
+};
+$('planBtn').onclick = () => {
+  if (mode !== 'user') return;
+  const a = TaskInput.validateAvailable($('tAvail').value);
+  $('availErr').textContent = a.ok ? '' : a.error;
+  $('formErr').textContent = draft.length ? '' : 'Add at least one task first.';
+  if (!a.ok) { markInvalid(['tAvail']); return; }
+  if (!draft.length) { markInvalid(['tName']); return; }
+  clearInvalid(); setMsg('');
+  S = TaskInput.buildState(draft, a.value); R = run(S); prev = null; lastDone = {}; planned = true; flash = true; render();
+  $('announce').textContent = 'Plan ready. ' + headText + '.';
+  const top = $('status'); if (top.scrollIntoView) top.scrollIntoView({ block: 'start', behavior: 'smooth' }); if (top.focus) top.focus({ preventScroll: true });
+};
+$('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); R = run(S); prev = null; lastDone = {}; clearInvalid(); setMsg(''); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
+render();
+</script>
+</body>
+</html>
