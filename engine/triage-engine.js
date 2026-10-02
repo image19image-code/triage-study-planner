@@ -251,7 +251,7 @@
       const placed = sched.blocks.filter((b) => b.taskId === r.id).reduce((s, b) => s + b.minutes, 0);
       const unplaced = r.kind === 'active' ? r.a - placed : 0;          // unplaced = allocated - sum(blocks)
       return {
-        id: r.id, name: r.name, seq: r.seq, decision,
+        id: r.id, name: r.name, seq: r.seq, decision, importance: r.importance, protected: r.importance === PROTECTED_IMPORTANCE,
         remaining: r.remaining, allocated: r.a, cut: r.kind === 'active' ? r.remaining - r.a : 0,
         floorFuture: r.floorFuture, placed, unplaced, atRisk: unplaced > 0,
         reason: reasonFor(r, decision, steps, cfg),
