@@ -9,7 +9,7 @@ const TI = require(path.join(DIR, 'engine', 'task-input.js'));
 
 function boot() {
   const els = {}, errors = [];
-  const el = (id) => els[id] || (els[id] = { id, innerHTML: '', textContent: '', value: '', hidden: false, onclick: null });
+  const el = (id) => els[id] || (els[id] = { id, innerHTML: '', textContent: '', value: '', hidden: false, disabled: false, onclick: null, attrs: {}, focused: 0, setAttribute(k, v) { this.attrs[k] = String(v); }, removeAttribute(k) { delete this.attrs[k]; }, getAttribute(k) { return this.attrs[k]; }, focus() { this.focused++; } });
   const doc = { getElementById: el, values: {} };
   doc.querySelectorAll = () => {
     const out = []; const re = /<input[^>]*value="(\d+)"[^>]*data-id="([^"]*)"/g; let m;
@@ -172,6 +172,39 @@ test('IN-22 buildState output is valid engine input; no importance/deadline rule
   const st = TI.buildState([{ id: 'u1', name: 'A', estimate: 30, importance: 3, days: 2 }], 90);
   assert.doesNotThrow(() => TE.runTriageEngine(st)); assert.strictEqual(st.capacity.length, 3); assert.strictEqual(st.now, 900);
   assert.ok(!/\bimp\w*\s*(===|!==|>=|<=|<|>)\s*\d/.test(code), 'importance comparison found in index.html script: the UI must not decide Protect/Reduce/Defer');
+});
+
+// ---- final polish: behaviors added in the hardening pass ----
+test('IN-24 focus moves to the FIRST invalid field (form order) and marks every invalid field', () => {
+  const a = boot().start(); const f0 = a.els.tEst.focused; a.add('Essay', 'abc', 3, '1');
+  assert.strictEqual(a.els.tEst.focused, f0 + 1); assert.strictEqual(a.els.tEst.attrs['aria-invalid'], 'true'); assert.strictEqual(a.els.tName.attrs['aria-invalid'], undefined);
+  const b = boot().start(); const n0 = b.els.tName.focused, e0 = b.els.tEst.focused; b.add('', 'abc', 3, '1');   // name AND time wrong -> only the name gets focus
+  assert.strictEqual(b.els.tName.focused, n0 + 1); assert.strictEqual(b.els.tEst.focused, e0);
+  assert.strictEqual(b.els.tName.attrs['aria-invalid'], 'true'); assert.strictEqual(b.els.tEst.attrs['aria-invalid'], 'true');
+  b.els.tEst.oninput(); assert.strictEqual(b.els.tEst.attrs['aria-invalid'], undefined);   // typing clears the red state
+  const c = boot().start().add('A', '30', 3, '1'); const v0 = c.els.tAvail.focused; c.plan('-4');
+  assert.strictEqual(c.els.tAvail.focused, v0 + 1); assert.strictEqual(c.els.tAvail.attrs['aria-invalid'], 'true');
+  const d = boot().start(); const m0 = d.els.tName.focused; d.plan(60); assert.strictEqual(d.els.tName.focused, m0 + 1);   // no tasks -> focus the name field
+});
+test('IN-25 PLAN MY TIME is disabled until there is at least one task, with a visible reason', () => {
+  const a = boot().start(); assert.strictEqual(a.els.planBtn.disabled, true); assert.ok(/at least one task/i.test(a.els.planHint.textContent));
+  a.add('A', '30', 3, '1'); assert.strictEqual(a.els.planBtn.disabled, false); assert.strictEqual(a.els.planHint.textContent, '');
+  a.rm('u1'); assert.strictEqual(a.els.planBtn.disabled, true);
+});
+test('IN-26 add / remove give clear feedback, and say when an old plan was cleared', () => {
+  const a = boot().start().add('Essay', '60', 3, '1'); assert.strictEqual(a.els.formMsg.textContent, 'Added "Essay". 1 task ready. Add more, or press PLAN MY TIME.');
+  a.plan(120); a.add('Quiz', '30', 4, '1'); assert.ok(/Added "Quiz"\. 2 tasks ready\. The old plan was cleared/.test(a.els.formMsg.textContent), a.els.formMsg.textContent);
+  a.plan(120); a.rm('u1'); assert.ok(/Removed "Essay"\. 1 task left\. The old plan was cleared/.test(a.els.formMsg.textContent), a.els.formMsg.textContent);
+  assert.strictEqual(a.els.tName.focused >= 1, true);
+});
+test('IN-27 I FELL BEHIND inputs are labelled with the (escaped) task name', () => {
+  const a = boot().start().add('Q"<b>x', '60', 3, '0').plan(120); a.els.fb.onclick();
+  assert.ok(a.els.behind.innerHTML.includes('aria-label="Minutes actually done: Q&quot;&lt;b&gt;x"'), a.els.behind.innerHTML);
+});
+test('IN-28 planning window is presented as a window (not the device clock); no stray escape text in the HTML', () => {
+  const a = userScenario(); assert.ok(txt(a.els.blocks.innerHTML).includes('15:00\u201322:00 planning window, not your device clock'), txt(a.els.blocks.innerHTML));
+  const markup = html.split('<script')[0]; assert.ok(!/\\u[0-9a-f]{4}/i.test(markup), 'literal \\uXXXX text in the visible HTML');
+  assert.ok(markup.includes('15:00\u201322:00 each day') && /not your device clock/.test(markup));
 });
 
 console.log('Input tests: ' + pass + ' passed, ' + fail + ' failed');
