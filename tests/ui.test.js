@@ -9,7 +9,7 @@ const TE = require(path.join(DIR, 'engine', 'triage-engine.js'));
 
 function boot() {
   const els = {}, errors = [];
-  const el = (id) => els[id] || (els[id] = { id, innerHTML: '', textContent: '', onclick: null });
+  const el = (id) => els[id] || (els[id] = { id, innerHTML: '', textContent: '', onclick: null, attrs: {}, focused: 0, setAttribute(k, v) { this.attrs[k] = String(v); }, removeAttribute(k) { delete this.attrs[k]; }, getAttribute(k) { return this.attrs[k]; }, focus() { this.focused++; } });
   const doc = { getElementById: el, values: {} };
   doc.querySelectorAll = () => {
     const out = []; const re = /<input[^>]*value="(\d+)"[^>]*data-id="(\w+)"/g; let m;
@@ -94,6 +94,13 @@ test('UI-11 bad inputs never throw or print NaN/undefined', () => {
     const a = fell(v); const all = a.els.status.innerHTML + a.els.triage.innerHTML + a.els.blocks.innerHTML + a.els.changes.innerHTML;
     assert.ok(!/NaN|undefined|null/.test(all), JSON.stringify(v));
   });
+});
+
+test('UI-12 regression: critical 45/25/0 -> 8h 50m needed / 6h available / 2h 50m shortfall; only English + Chemistry change', () => {
+  const a = fell({ math: '45', eng: '25', quiz: '0' }); const s = txt(a.els.status.innerHTML);
+  assert.ok(s.includes('Short by 2h 50m') && s.includes('8h 50m needed') && s.includes('6h available') && s.includes('2h 50m shortfall'), s);
+  const c = changes(a); assert.ok(/English essay: planned 20m \u2192 deferred/.test(c) && /Chemistry lab: planned 30m \u2192 deferred/.test(c), c);
+  assert.strictEqual((c.match(/\u2192/g) || []).length, 2, c);
 });
 
 console.log('UI tests: ' + pass + ' passed, ' + fail + ' failed');
