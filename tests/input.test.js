@@ -207,5 +207,17 @@ test('IN-28 planning window is presented as a window (not the device clock); no 
   assert.ok(markup.includes('15:00\u201322:00 each day') && /not your device clock/.test(markup));
 });
 
+test('IN-29 task counter and empty state follow the list: "0 tasks" -> "3 tasks ready"', () => {
+  const a = boot(); assert.strictEqual(a.els.taskCount.textContent, '7 demo tasks');
+  a.start(); assert.strictEqual(a.els.taskCount.textContent, '0 tasks'); assert.ok(txt(a.els.taskList.innerHTML).includes('0 tasks Add your first task below.'));
+  a.add('A', '30', 3, '1').add('B', '30', 3, '1').add('C', '30', 3, '1'); assert.strictEqual(a.els.taskCount.textContent, '3 tasks ready');
+  a.rm('u2'); assert.strictEqual(a.els.taskCount.textContent, '2 tasks ready');
+});
+test('IN-30 plan/replan announce the result for screen readers and only the new result flashes once', () => {
+  const a = userScenario(); assert.ok(/^Plan ready\. Short by 1h 10m\.$/.test(a.els.announce.textContent), a.els.announce.textContent);
+  assert.ok(a.els.status.innerHTML.includes('status bad fresh'));
+  a.fell({}); assert.ok(/^Plan updated\./.test(a.els.announce.textContent)); assert.ok(a.els.changes.innerHTML.includes('chg fresh'));
+});
+
 console.log('Input tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
