@@ -30,6 +30,12 @@ button.primary{background:var(--red);color:#fff;border-color:var(--red);font-wei
 input[type=number]{font:inherit;width:84px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .fr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0}
 .chg{border-left:4px solid var(--blue);padding-left:12px}.mut{color:var(--mut);font-size:13px}
+input[type=text],select{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0;width:100%}
+.frm{display:grid;grid-template-columns:2fr 1fr 1.2fr 1fr;gap:8px;margin-top:10px}.frm label,.av label{display:block;font-size:12px;color:var(--mut)}
+@media(max-width:560px){.frm{grid-template-columns:1fr 1fr}.frm .wide{grid-column:1/-1}}
+.err{color:var(--red);font-size:13px;margin-top:6px}.err:empty{display:none}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.trow:first-child{border-top:0}
+.trow button{padding:4px 10px;font-size:13px}.av{margin:14px 0 12px;max-width:260px}[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -37,14 +43,38 @@ input[type=number]{font:inherit;width:84px;padding:6px 8px;border-radius:8px;bor
   <h1>Triage</h1>
   <p class="sub">Study planner that tells the truth.</p>
   <div id="status"></div>
+  <div id="empty" class="card mut" hidden>Add your tasks below, enter your study time, then press <b>PLAN MY TIME</b>.</div>
+  <h2>Your tasks</h2>
+  <div class="card" id="tasks">
+    <div id="taskList"></div>
+    <div id="demoNote" class="mut" style="margin-top:8px"></div>
+    <button id="useOwn" style="margin-top:10px">Use my own tasks</button>
+    <div id="form" hidden>
+      <div class="frm">
+        <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry report"></div>
+        <div><label for="tEst">Estimated minutes</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="60"></div>
+        <div><label for="tImp">Importance</label><select id="tImp"><option value="1">1 low</option><option value="2">2</option><option value="3" selected>3 normal</option><option value="4">4</option><option value="5">5 never cut</option></select></div>
+        <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today"></div>
+        <div class="wide"><button id="addBtn">Add task</button></div>
+      </div>
+      <div class="err" id="formErr" role="alert"></div>
+      <div class="av"><label for="tAvail">Available study time per day (minutes)</label><input id="tAvail" type="text" inputmode="numeric" autocomplete="off" value="120"></div>
+      <div class="mut" style="margin:-8px 0 10px">Planning window: 15:00\u201322:00 each day (at most 7h/day count).</div>
+      <div class="err" id="availErr" role="alert"></div>
+      <button class="primary" id="planBtn">PLAN MY TIME</button>
+    </div>
+  </div>
+  <div id="rest">
   <h2>Triage</h2><div class="card" id="triage"></div>
   <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
   <h2>Falling behind?</h2><div id="behind"></div>
   <div id="changes"></div>
+  </div>
   <p class="mut" style="margin-top:28px"><button id="reset">Reset demo</button> &nbsp; All decisions come from a deterministic engine. No AI makes them.</p>
 </main>
 
 <script src="engine/triage-engine.js"></script>
+<script src="engine/task-input.js"></script>
 <script>
 const run = TriageEngine.runTriageEngine;
 const T = (id, name, seq, day, est, imp, o = {}) => ({ id, name, seq, deadlineDay: day, deadlineTime: o.time, estimate: est, completed: 0, importance: imp, allOrNothing: !!o.aon });
@@ -54,14 +84,14 @@ const demo = () => ({ now: 900, capacity: [120, 60, 60, 0, 60, 60, 60, 0, 60], t
   T('bio', 'Biology exam', 5, 5, 150, 5), T('chem', 'Chemistry lab', 6, 6, 45, 3), T('hist', 'History project', 7, 8, 150, 4)] });
 
 let S = demo(), R = run(S), prev = null, lastDone = {};
+let mode = 'demo', draft = [], nextId = 1, planned = true;
 const $ = (id) => document.getElementById(id);
 const fmt = (m) => { const h = Math.floor(m / 60), x = m % 60; return h && x ? h + 'h ' + x + 'm' : h ? h + 'h' : x + 'm'; };
 const hh = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
 const dayName = (d) => (d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : 'Day ' + d);
 const nm = (id) => S.tasks.find((t) => t.id === id).name;
-const imp = (id) => S.tasks.find((t) => t.id === id).importance;
 const dl = (s) => String(s).replace(/\bD(\d+)\b/g, (m, d) => (+d === 0 ? 'today' : +d === 1 ? 'tomorrow' : 'day ' + d));
-const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 function renderStatus() {
   const s = R.summary; let cls, head, sub;
@@ -79,7 +109,7 @@ function renderTriage() {
   const g = { full: [], reduced: [], deferred: [] }; act.forEach((t) => g[t.decision].push(t));
   const why = (t) => '<details><summary>Why?</summary><p>' + esc(dl(t.reason)) + '</p></details>';
   let h = '';
-  if (g.full.length) h += '<div class="grp">Protect / keep</div>' + g.full.map((t) => '<div class="row">' + esc(t.name) + (imp(t.id) === 5 ? '<span class="tag t-keep">PROTECTED</span>' : '<span class="tag t-keep">FULL</span>') + ' <span class="mut">' + fmt(t.allocated) + '</span>' + (t.atRisk ? '<span class="tag t-def">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '') + why(t) + '</div>').join('');
+  if (g.full.length) h += '<div class="grp">Protect / keep</div>' + g.full.map((t) => '<div class="row">' + esc(t.name) + (t.protected ? '<span class="tag t-keep">PROTECTED</span>' : '<span class="tag t-keep">FULL</span>') + ' <span class="mut">' + fmt(t.allocated) + '</span>' + (t.atRisk ? '<span class="tag t-def">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '') + why(t) + '</div>').join('');
   if (g.reduced.length) h += '<div class="grp">Reduce</div>' + g.reduced.map((t) => '<div class="row">' + esc(t.name) + '<span class="tag t-red">' + fmt(t.remaining) + ' \u2192 ' + fmt(t.allocated) + '</span>' + why(t) + '</div>').join('');
   if (g.deferred.length) h += '<div class="grp">Defer</div>' + g.deferred.map((t) => '<div class="row">' + esc(t.name) + '<span class="tag t-def">DEFERRED</span> <span class="mut">' + fmt(t.remaining) + ' not scheduled</span>' + why(t) + '</div>').join('');
   if (R.overdue.length) h += '<div class="grp">Overdue</div>' + R.overdue.map((id) => '<div class="row">' + esc(nm(id)) + ': set a new deadline or drop it.</div>').join('');
@@ -104,7 +134,7 @@ function renderBehind(open) {
   if (!open) { $('behind').innerHTML = '<button class="primary" id="fb">I FELL BEHIND</button>'; $('fb').onclick = () => renderBehind(true); return; }
   const planned = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { planned[b.taskId] = (planned[b.taskId] || 0) + b.minutes; });
   $('behind').innerHTML = '<div class="card"><b>What actually happened today?</b>' + Object.keys(planned).map((id) =>
-    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + planned[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + planned[id] + '" data-id="' + id + '"> min</span></div>').join('') +
+    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + planned[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + planned[id] + '" data-id="' + esc(id) + '"> min</span></div>').join('') +
     '<div style="margin-top:10px"><button class="primary" id="rp">REPLAN</button></div></div>';
   $('rp').onclick = () => {
     const before = R;
@@ -126,8 +156,46 @@ function renderChanges() {
     '<div class="mut" style="margin-top:6px">Protected tasks were not touched.</div></div>';
 }
 
-function render() { renderStatus(); renderTriage(); renderBlocks(); renderBehind(false); renderChanges(); }
-$('reset').onclick = () => { S = demo(); R = run(S); prev = null; lastDone = {}; render(); };
+const dueLabel = (d, time) => dayName(d).toLowerCase() + (time !== undefined ? ' ' + hh(time) : '');
+function renderTasks() {
+  const demoMode = mode === 'demo';
+  $('form').hidden = demoMode; $('useOwn').hidden = !demoMode;
+  $('demoNote').textContent = demoMode ? 'Demo data. Press "Use my own tasks" to enter yours.' : '';
+  const rows = demoMode ? S.tasks.map((t) => ({ id: t.id, name: t.name, estimate: t.estimate, importance: t.importance, days: t.deadlineDay, time: t.deadlineTime })) : draft;
+  $('taskList').innerHTML = rows.length ? rows.map((r) => '<div class="trow"><span>' + esc(r.name) + ' <span class="mut">' + fmt(r.estimate) + ' \u00b7 importance ' + r.importance + ' \u00b7 due ' + dueLabel(r.days, r.time) + '</span></span>' +
+    (demoMode ? '' : '<button data-rm="' + esc(r.id) + '" aria-label="Remove task">Remove</button>') + '</div>').join('') : '<span class="mut">No tasks yet. Add your first task below.</span>';
+}
+function render() {
+  const show = mode === 'demo' || planned;
+  $('empty').hidden = show; $('status').hidden = !show; $('rest').hidden = !show;
+  renderTasks();
+  if (show) { renderStatus(); renderTriage(); renderBlocks(); renderBehind(false); renderChanges(); }
+}
+const invalidate = () => { planned = false; prev = null; lastDone = {}; };   // editing tasks => plan is rebuilt from scratch (no leftover progress)
+$('useOwn').onclick = () => { mode = 'user'; draft = []; nextId = 1; invalidate(); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
+$('taskList').onclick = (e) => {
+  const id = e && e.target && e.target.dataset && e.target.dataset.rm;
+  if (!id || mode !== 'user') return;
+  draft = draft.filter((t) => t.id !== id); invalidate(); render();
+};
+$('addBtn').onclick = () => {
+  if (mode !== 'user') return;
+  if (draft.length >= TaskInput.LIMITS.MAX_TASKS) { $('formErr').textContent = 'You can plan at most ' + TaskInput.LIMITS.MAX_TASKS + ' tasks at a time.'; return; }
+  const v = TaskInput.validateTask({ name: $('tName').value, estimate: $('tEst').value, importance: $('tImp').value, days: $('tDays').value });
+  if (!v.ok) { $('formErr').textContent = Object.values(v.errors).join(' '); return; }
+  draft.push(Object.assign({ id: 'u' + (nextId++) }, v.task));
+  $('formErr').textContent = ''; $('tName').value = ''; $('tEst').value = ''; $('tDays').value = '';
+  invalidate(); render();
+};
+$('planBtn').onclick = () => {
+  if (mode !== 'user') return;
+  const a = TaskInput.validateAvailable($('tAvail').value);
+  $('availErr').textContent = a.ok ? '' : a.error;
+  $('formErr').textContent = draft.length ? '' : 'Add at least one task first.';
+  if (!a.ok || !draft.length) return;
+  S = TaskInput.buildState(draft, a.value); R = run(S); prev = null; lastDone = {}; planned = true; render();
+};
+$('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); R = run(S); prev = null; lastDone = {}; render(); };
 render();
 </script>
 </body>
