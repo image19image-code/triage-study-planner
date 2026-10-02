@@ -219,5 +219,44 @@ test('IN-30 plan/replan announce the result for screen readers and only the new 
   a.fell({}); assert.ok(/^Plan updated\./.test(a.els.announce.textContent)); assert.ok(a.els.changes.innerHTML.includes('chg fresh'));
 });
 
+// ---- adversarial: random user sessions against the real UI script (lifecycle: demo -> own tasks -> plan -> edit -> fall behind -> replan -> reset) ----
+test('IN-31 adversarial: 40 random sessions x 60 actions never throw, never show NaN/undefined, never lose or double-count time', () => {
+  let seed = 20260601; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const names = ['Essay', '<img src=x onerror=1>', 'x'.repeat(61), '', '  ', 'Quiz "prep"', "O'Neil"];
+  const nums = ['0', '1', '15', '45', '60', '120', '1440', '1441', '-3', '2.5', 'abc', '', '999999', '07'];
+  for (let s = 0; s < 40; s++) {
+    const a = boot(); let step = '';
+    for (let i = 0; i < 60; i++) {
+      const act = pick(['start', 'add', 'add', 'add', 'rm', 'plan', 'plan', 'fell', 'fell', 'reset']);
+      step = act + '#' + i;
+      try {
+        if (act === 'start') a.start();
+        else if (act === 'add') a.add(pick(names), pick(nums), pick(['1', '3', '5', '0', '9', 'x']), pick(['0', '1', '2', '60', '61', '-1', 'x']));
+        else if (act === 'rm') { const d = a.ctx.__D(); a.rm(d.length ? pick(d).id : 'u99'); }
+        else if (act === 'plan') a.plan(pick(nums));
+        else if (act === 'fell') {
+          if (!a.els.behind.innerHTML.includes('id="fb"')) continue;
+          a.els.fb.onclick(); a.doc.values = {}; [...a.els.behind.innerHTML.matchAll(/data-id="([^"]+)"/g)].forEach((m) => { a.doc.values[m[1]] = pick(nums); }); a.els.rp.onclick();
+        } else a.els.reset.onclick();
+      } catch (e) { throw new Error('threw on ' + step + ' (session ' + s + '): ' + e.message); }
+      const all = ['status', 'taskList', 'triage', 'blocks', 'behind', 'changes', 'taskCount'].map((k) => a.els[k].innerHTML + a.els[k].textContent).join('|');
+      assert.ok(!/NaN|undefined|\[object/.test(all), 'bad text after ' + step + ' (session ' + s + ')');
+      const S = a.ctx.__S(), R = a.ctx.__R();
+      assert.strictEqual(JSON.stringify(R), JSON.stringify(TE.runTriageEngine(S)), 'UI result differs from engine after ' + step);
+      assert.strictEqual(R.tasks.reduce((x, t) => x + t.remaining, 0), S.tasks.reduce((x, t) => x + Math.max(0, t.estimate - t.completed), 0), 'time lost/double counted after ' + step);
+      assert.ok(S.tasks.every((t) => t.completed >= 0 && Number.isInteger(t.completed)), 'bad completed after ' + step);
+    }
+  }
+});
+
+test('IN-32 keyboard: Enter adds the task from any entry field and Enter in the time field plans', () => {
+  const a = boot().start(); const enter = { key: 'Enter', preventDefault() { this.stopped = true; } };
+  a.els.tName.value = 'Essay'; a.els.tEst.value = '60'; a.els.tImp.value = '3'; a.els.tDays.value = '1'; a.els.tEst.onkeydown(enter);   // the real <select> defaults to 3
+  assert.strictEqual(a.ctx.__D().length, 1); assert.strictEqual(enter.stopped, true);
+  a.els.tAvail.value = '90'; a.els.tAvail.onkeydown(enter); assert.strictEqual(a.els.rest.hidden, false);
+  const other = { key: 'a', preventDefault() { this.stopped = true; } }; a.els.tName.onkeydown(other); assert.ok(!other.stopped);
+});
+
 console.log('Input tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
