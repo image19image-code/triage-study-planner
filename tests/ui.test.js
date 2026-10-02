@@ -115,5 +115,18 @@ test('UI-14 only the first priority block says "Start here"; Defer zone never cl
   assert.ok(/Defer<span class="hint">left out of this plan/.test(a.els.triage.innerHTML));
 });
 
+test('UI-15 Why? is short, human, states the numbers, and says it is deterministic (no AI wording of its own)', () => {
+  const R0 = boot().els.triage.innerHTML; const ps = [...R0.matchAll(/<p>(.*?)<\/p>/g)].map((m) => m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+  assert.strictEqual(ps.length, 7);                       // 4 full + 2 reduced + 1 deferred
+  ps.forEach((x) => { assert.ok(x.length < 220, 'wall of text: ' + x); assert.ok(x.includes('No AI'), x); assert.ok(!/AI (thinks|recommends|suggests)/i.test(x), x); });
+  const t = txt(R0);
+  assert.ok(t.includes('Importance 2 was the least important task still in your plan, and you were 45m short by day 5. So Triage defers it'), t);
+  assert.ok(t.includes('Importance 5 is never cut') && t.includes('shortens it instead of dropping it'));
+});
+test('UI-16 after REPLAN the recovery panel explains instead of looking broken', () => {
+  const a = fell({ math: '45', eng: '25', quiz: '0' }); const b = txt(a.els.behind.innerHTML);
+  assert.ok(b.includes('Plan rebuilt from what you actually did. Your next session is tomorrow.'), b);
+});
+
 console.log('UI tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
