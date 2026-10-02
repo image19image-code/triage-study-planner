@@ -250,11 +250,13 @@
       const decision = decide(r);
       const placed = sched.blocks.filter((b) => b.taskId === r.id).reduce((s, b) => s + b.minutes, 0);
       const unplaced = r.kind === 'active' ? r.a - placed : 0;          // unplaced = allocated - sum(blocks)
+      const ls = steps.filter((s) => s.taskId === r.id).pop();          // last Triage step that touched this task
       return {
         id: r.id, name: r.name, seq: r.seq, decision, importance: r.importance, protected: r.importance === PROTECTED_IMPORTANCE,
         remaining: r.remaining, allocated: r.a, cut: r.kind === 'active' ? r.remaining - r.a : 0,
         floorFuture: r.floorFuture, placed, unplaced, atRisk: unplaced > 0,
         reason: reasonFor(r, decision, steps, cfg),
+        why: ls && (decision === 'reduced' || decision === 'deferred') ? { kind: ls.kind, level: ls.level, day: ls.Tstar.day, time: ls.Tstar.time, need: ls.need } : null,
       };
     });
 
