@@ -36,32 +36,43 @@ input[type=text],select{font:inherit;padding:8px 10px;border-radius:8px;border:1
 .err{color:var(--red);font-size:13px;margin-top:6px}.err:empty{display:none}
 .trow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.trow:first-child{border-top:0}
 .trow button{padding:4px 10px;font-size:13px}.av{margin:14px 0 12px;max-width:260px}[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.ok{color:var(--grn);font-size:13px;margin-top:6px}.ok:empty{display:none}
+.intro{margin:-8px 0 16px;font-size:15px}
+@media(max-width:560px){button,input[type=text],select{min-height:44px}.nums{gap:12px}}
 </style>
 </head>
 <body>
 <main>
-  <h1>Triage</h1>
-  <p class="sub">Study planner that tells the truth.</p>
+  <header>
+    <h1>Triage</h1>
+    <p class="sub">Study planner that tells the truth.</p>
+    <p class="intro">Tell it what you must do and the time you really have. It says whether that is realistic, what to protect, reduce or defer, and what changes when you fall behind.</p>
+  </header>
   <div id="status"></div>
   <div id="empty" class="card mut" hidden>Add your tasks below, enter your study time, then press <b>PLAN MY TIME</b>.</div>
   <h2>Your tasks</h2>
   <div class="card" id="tasks">
     <div id="taskList"></div>
     <div id="demoNote" class="mut" style="margin-top:8px"></div>
-    <button id="useOwn" style="margin-top:10px">Use my own tasks</button>
+    <button type="button" id="useOwn" style="margin-top:10px">Use my own tasks</button>
     <div id="form" hidden>
       <div class="frm">
-        <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry report"></div>
-        <div><label for="tEst">Estimated minutes</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="60"></div>
+        <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry lab report" aria-describedby="formErr"></div>
+        <div><label for="tEst">Time needed (min)</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 60" aria-describedby="formErr"></div>
         <div><label for="tImp">Importance</label><select id="tImp"><option value="1">1 low</option><option value="2">2</option><option value="3" selected>3 normal</option><option value="4">4</option><option value="5">5 never cut</option></select></div>
-        <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today"></div>
-        <div class="wide"><button id="addBtn">Add task</button></div>
+        <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today, 1 = tomorrow" aria-describedby="formErr"></div>
+        <div class="wide"><button type="button" id="addBtn">Add task</button></div>
       </div>
       <div class="err" id="formErr" role="alert"></div>
-      <div class="av"><label for="tAvail">Available study time per day (minutes)</label><input id="tAvail" type="text" inputmode="numeric" autocomplete="off" value="120"></div>
-      <div class="mut" style="margin:-8px 0 10px">Planning window: 15:00\u201322:00 each day (at most 7h/day count).</div>
+      <div class="ok" id="formMsg" role="status"></div>
+      <div class="av"><label for="tAvail">Available study time per day (minutes)</label><input id="tAvail" type="text" inputmode="numeric" autocomplete="off" value="120" aria-describedby="availErr"></div>
+      <div class="mut" style="margin:-8px 0 10px">Planning window: 15:00–22:00 each day. It is a fixed planning window, not your device clock (at most 7h/day count).</div>
       <div class="err" id="availErr" role="alert"></div>
-      <button class="primary" id="planBtn">PLAN MY TIME</button>
+      <div class="mut" id="planHint"></div>
+      <button type="button" class="primary" id="planBtn">PLAN MY TIME</button>
     </div>
   </div>
   <div id="rest">
@@ -70,7 +81,7 @@ input[type=text],select{font:inherit;padding:8px 10px;border-radius:8px;border:1
   <h2>Falling behind?</h2><div id="behind"></div>
   <div id="changes"></div>
   </div>
-  <p class="mut" style="margin-top:28px"><button id="reset">Reset demo</button> &nbsp; All decisions come from a deterministic engine. No AI makes them.</p>
+  <p class="mut" style="margin-top:28px"><button type="button" id="reset">Reset demo</button> &nbsp; All decisions come from a deterministic engine. No AI makes them.</p>
 </main>
 
 <script src="engine/triage-engine.js"></script>
@@ -125,17 +136,17 @@ function renderBlocks() {
   $('blocks').innerHTML = R.blocks.filter((b) => b.day === d).map((b) => {
     const s = t; t += b.minutes;
     return '<div class="blk"><time>' + hh(s) + ' \u2013 ' + hh(t) + '</time><span>' + esc(nm(b.taskId)) + ' <span class="mut">' + b.minutes + ' min</span></span></div>';
-  }).join('') + '<div class="mut" style="margin-top:6px">Time is the constraint, not the number of tasks.</div>';
+  }).join('') + '<div class="mut" style="margin-top:6px">Times are a 15:00\u201322:00 planning window, not your device clock. Time is the constraint, not the number of tasks.</div>';
 }
 
 function renderBehind(open) {
   const d = planDay();
   if (d !== 0) { $('behind').innerHTML = '<div class="card mut">Nothing is planned for today. Come back when a session is due.</div>'; return; }
-  if (!open) { $('behind').innerHTML = '<button class="primary" id="fb">I FELL BEHIND</button>'; $('fb').onclick = () => renderBehind(true); return; }
-  const planned = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { planned[b.taskId] = (planned[b.taskId] || 0) + b.minutes; });
-  $('behind').innerHTML = '<div class="card"><b>What actually happened today?</b>' + Object.keys(planned).map((id) =>
-    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + planned[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + planned[id] + '" data-id="' + esc(id) + '"> min</span></div>').join('') +
-    '<div style="margin-top:10px"><button class="primary" id="rp">REPLAN</button></div></div>';
+  if (!open) { $('behind').innerHTML = '<button type="button" class="primary" id="fb">I FELL BEHIND</button>'; $('fb').onclick = () => renderBehind(true); return; }
+  const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
+  $('behind').innerHTML = '<div class="card"><b>What actually happened today?</b>' + Object.keys(plannedMin).map((id) =>
+    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
+    '<div style="margin-top:10px"><button type="button" class="primary" id="rp">REPLAN</button></div></div>';
   $('rp').onclick = () => {
     const before = R;
     const done = {};
@@ -160,7 +171,9 @@ const dueLabel = (d, time) => dayName(d).toLowerCase() + (time !== undefined ? '
 function renderTasks() {
   const demoMode = mode === 'demo';
   $('form').hidden = demoMode; $('useOwn').hidden = !demoMode;
-  $('demoNote').textContent = demoMode ? 'Demo data. Press "Use my own tasks" to enter yours.' : '';
+  $('demoNote').textContent = demoMode ? 'Demo data (not real). Try I FELL BEHIND below, or press "Use my own tasks".' : '';
+  $('planBtn').disabled = !demoMode && draft.length === 0;
+  $('planHint').textContent = !demoMode && draft.length === 0 ? 'Add at least one task to enable planning.' : '';
   const rows = demoMode ? S.tasks.map((t) => ({ id: t.id, name: t.name, estimate: t.estimate, importance: t.importance, days: t.deadlineDay, time: t.deadlineTime })) : draft;
   $('taskList').innerHTML = rows.length ? rows.map((r) => '<div class="trow"><span>' + esc(r.name) + ' <span class="mut">' + fmt(r.estimate) + ' \u00b7 importance ' + r.importance + ' \u00b7 due ' + dueLabel(r.days, r.time) + '</span></span>' +
     (demoMode ? '' : '<button data-rm="' + esc(r.id) + '" aria-label="Remove task">Remove</button>') + '</div>').join('') : '<span class="mut">No tasks yet. Add your first task below.</span>';
@@ -172,30 +185,51 @@ function render() {
   if (show) { renderStatus(); renderTriage(); renderBlocks(); renderBehind(false); renderChanges(); }
 }
 const invalidate = () => { planned = false; prev = null; lastDone = {}; };   // editing tasks => plan is rebuilt from scratch (no leftover progress)
-$('useOwn').onclick = () => { mode = 'user'; draft = []; nextId = 1; invalidate(); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
+const FIELD = { name: 'tName', estimate: 'tEst', importance: 'tImp', days: 'tDays' };
+const setMsg = (text) => { $('formMsg').textContent = text; };
+const clearInvalid = () => ['tName', 'tEst', 'tImp', 'tDays', 'tAvail'].forEach((id) => $(id).removeAttribute('aria-invalid'));
+function markInvalid(ids) { clearInvalid(); ids.forEach((id) => $(id).setAttribute('aria-invalid', 'true')); if (ids.length) $(ids[0]).focus(); }
+const count = (n) => n + (n === 1 ? ' task' : ' tasks');
+['tName', 'tEst', 'tDays', 'tAvail'].forEach((id) => { $(id).oninput = () => $(id).removeAttribute('aria-invalid'); });
+
+$('useOwn').onclick = () => { mode = 'user'; draft = []; nextId = 1; invalidate(); clearInvalid(); $('formErr').textContent = ''; $('availErr').textContent = ''; setMsg(''); render(); $('tName').focus(); };
 $('taskList').onclick = (e) => {
   const id = e && e.target && e.target.dataset && e.target.dataset.rm;
   if (!id || mode !== 'user') return;
+  const gone = draft.find((t) => t.id === id); if (!gone) return;
+  const hadPlan = planned;
   draft = draft.filter((t) => t.id !== id); invalidate(); render();
+  setMsg('Removed "' + gone.name + '". ' + count(draft.length) + ' left.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ''));
 };
 $('addBtn').onclick = () => {
   if (mode !== 'user') return;
+  setMsg('');
   if (draft.length >= TaskInput.LIMITS.MAX_TASKS) { $('formErr').textContent = 'You can plan at most ' + TaskInput.LIMITS.MAX_TASKS + ' tasks at a time.'; return; }
   const v = TaskInput.validateTask({ name: $('tName').value, estimate: $('tEst').value, importance: $('tImp').value, days: $('tDays').value });
-  if (!v.ok) { $('formErr').textContent = Object.values(v.errors).join(' '); return; }
+  if (!v.ok) {
+    $('formErr').textContent = Object.values(v.errors).join(' ');
+    markInvalid(Object.keys(FIELD).filter((k) => v.errors[k]).map((k) => FIELD[k]));   // focus lands on the first wrong field, in form order
+    return;
+  }
+  const hadPlan = planned;
   draft.push(Object.assign({ id: 'u' + (nextId++) }, v.task));
-  $('formErr').textContent = ''; $('tName').value = ''; $('tEst').value = ''; $('tDays').value = '';
+  clearInvalid(); $('formErr').textContent = ''; $('tName').value = ''; $('tEst').value = ''; $('tDays').value = '';
   invalidate(); render();
+  setMsg('Added "' + v.task.name + '". ' + count(draft.length) + ' ready.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ' Add more, or press PLAN MY TIME.'));
+  $('tName').focus();
 };
 $('planBtn').onclick = () => {
   if (mode !== 'user') return;
   const a = TaskInput.validateAvailable($('tAvail').value);
   $('availErr').textContent = a.ok ? '' : a.error;
   $('formErr').textContent = draft.length ? '' : 'Add at least one task first.';
-  if (!a.ok || !draft.length) return;
+  if (!a.ok) { markInvalid(['tAvail']); return; }
+  if (!draft.length) { markInvalid(['tName']); return; }
+  clearInvalid(); setMsg('');
   S = TaskInput.buildState(draft, a.value); R = run(S); prev = null; lastDone = {}; planned = true; render();
+  const top = $('status'); if (top.scrollIntoView) top.scrollIntoView({ block: 'start' });   // results sit above the form: bring them into view
 };
-$('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); R = run(S); prev = null; lastDone = {}; render(); };
+$('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); R = run(S); prev = null; lastDone = {}; clearInvalid(); setMsg(''); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
 render();
 </script>
 </body>
