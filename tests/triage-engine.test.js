@@ -384,5 +384,12 @@ test('Invariants hold on every golden scenario', () => {
   console.log('[info] stability after executing day 0 literally: ' + same + '/' + n + ' states unchanged');
 })();
 
+test('Why-structured: engine exposes the reason as data (kind, level, deadline day, minutes short)', () => {
+  const r = run(st(DEMO_CAP, demoTasks())); const w = (id) => row(r, id).why;
+  assert.deepStrictEqual(w('physics'), { kind: 'defer', level: 2, day: 5, time: 1320, need: 45 });
+  assert.strictEqual(w('english').kind, 'reduce'); assert.strictEqual(w('english').level, 3);
+  ['biology', 'quiz', 'history', 'math_hw'].forEach((id) => assert.strictEqual(w(id), null));
+});
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
