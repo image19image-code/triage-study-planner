@@ -57,5 +57,14 @@
     };
   }
 
-  return { validateTask, validateAvailable, buildState, LIMITS };
+  /**
+   * What-if: returns a NEW state where every study day (capacity > 0) gains `delta` minutes (never below 0).
+   * Days with 0 stay 0 (a day off is not a study day). delta = 0 returns an equal state. The input is never mutated.
+   */
+  function adjustCapacity(state, delta) {
+    if (!Number.isInteger(delta)) throw new TypeError('delta must be an integer number of minutes');
+    return Object.assign({}, state, { capacity: state.capacity.map((c) => (c > 0 ? Math.max(0, c + delta) : 0)) });
+  }
+
+  return { validateTask, validateAvailable, buildState, adjustCapacity, LIMITS };
 });
