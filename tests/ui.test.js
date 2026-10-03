@@ -128,5 +128,29 @@ test('UI-16 after REPLAN the recovery panel explains instead of looking broken',
   assert.ok(b.includes('Plan rebuilt from what you actually did. Your next session is tomorrow.'), b);
 });
 
+test('UI-17 what-if on the demo: +15 -> short 15m, +30 -> Realistic, -15 -> short 3h 45m, Back -> the exact golden demo', () => {
+  const a = boot(); const st = () => txt(a.els.status.innerHTML); const golden = JSON.stringify(a.ctx.__R());
+  assert.strictEqual(a.els.wiLabel.textContent, 'Your real time'); assert.strictEqual(a.els.wiBack.hidden, true);
+  a.els.wiPlus.onclick(); assert.ok(st().includes('Short by 15m') && st().includes('WHAT-IF'), st()); assert.strictEqual(a.els.wiLabel.textContent, '+15 min per study day');
+  a.els.wiPlus.onclick(); assert.ok(st().includes('Realistic') && !st().includes('Short by'), st());
+  a.els.wiBack.onclick(); assert.strictEqual(JSON.stringify(a.ctx.__R()), golden); assert.ok(st().includes('Short by 2h') && !st().includes('WHAT-IF')); assert.strictEqual(a.els.wiBack.hidden, true);
+  a.els.wiMinus.onclick(); assert.ok(st().includes('Short by 3h 45m'), st());
+  assert.ok(/English essay DEFERRED/.test(txt(a.els.triage.innerHTML)));   // less time -> English now deferred instead of reduced
+});
+test('UI-18 what-if never mixes with real recovery: I FELL BEHIND and "Your plan changed" are hidden, then restored', () => {
+  const a = boot(); a.els.wiPlus.onclick();
+  assert.ok(!a.els.behind.innerHTML.includes('id="fb"') && /what-if, not your real plan/.test(a.els.behind.innerHTML)); a.els.wiBack.onclick(); assert.ok(a.els.behind.innerHTML.includes('id="fb"'));
+  const b = fell({ math: '45', eng: '25', quiz: '0' }); const real = JSON.stringify(b.ctx.__R()), ch = changes(b); assert.ok(ch.includes('English essay'));
+  b.els.wiPlus.onclick(); assert.strictEqual(b.els.changes.innerHTML, ''); b.els.wiBack.onclick();
+  assert.strictEqual(JSON.stringify(b.ctx.__R()), real); assert.strictEqual(changes(b), ch);
+});
+test('UI-19 what-if is clamped to +-120, disables its buttons at the limit, and Reset clears it', () => {
+  const a = boot(); for (let i = 0; i < 12; i++) a.els.wiPlus.onclick();
+  assert.strictEqual(a.els.wiLabel.textContent, '+120 min per study day'); assert.strictEqual(a.els.wiPlus.disabled, true); assert.strictEqual(a.els.wiMinus.disabled, false);
+  for (let i = 0; i < 20; i++) a.els.wiMinus.onclick(); assert.strictEqual(a.els.wiLabel.textContent, '\u2212120 min per study day'); assert.strictEqual(a.els.wiMinus.disabled, true);
+  assert.ok(txt(a.els.status.innerHTML).includes('Still impossible'));
+  a.els.reset.onclick(); assert.strictEqual(a.els.wiLabel.textContent, 'Your real time'); assert.ok(txt(a.els.status.innerHTML).includes('Short by 2h'));
+});
+
 console.log('UI tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

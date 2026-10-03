@@ -18,7 +18,7 @@ function boot() {
   };
   ['status','empty','tasks','taskList','demoNote','useOwn','form','tName','tEst','tImp','tDays','addBtn','formErr','tAvail','availErr','planBtn','rest','triage','planTitle','blocks','behind','changes','reset'].forEach(el);
   const ctx = { TriageEngine: TE, TaskInput: TI, document: doc, console };
-  try { vm.runInNewContext(code + ';this.__S=()=>S;this.__R=()=>R;this.__D=()=>draft;', ctx); } catch (e) { errors.push(e.message); }
+  try { vm.runInNewContext(code + ';this.__S=()=>S;this.__R=()=>R;this.__D=()=>draft;this.__W=()=>whatIf;', ctx); } catch (e) { errors.push(e.message); }
   const app = { els, doc, ctx, errors };
   app.start = () => { els.useOwn.onclick(); return app; };
   app.add = (name, est, imp, days) => { els.tName.value = name; els.tEst.value = est; els.tImp.value = String(imp); els.tDays.value = days; els.addBtn.onclick(); return app; };
@@ -29,6 +29,8 @@ function boot() {
 }
 const txt = (h) => h.replace(/<summary>.*?<\/summary>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const everything = (a) => ['status', 'taskList', 'triage', 'blocks', 'behind', 'changes', 'formErr', 'availErr'].map((k) => a.els[k].innerHTML + a.els[k].textContent).join('\n');
+
+function deepFreezeIn(o) { Object.values(o).forEach((v) => { if (v && typeof v === 'object') deepFreezeIn(v); }); return Object.freeze(o); }
 
 let pass = 0, fail = 0;
 const test = (n, f) => { try { f(); pass++; } catch (e) { fail++; console.log('FAIL  ' + n + '\n      ' + String(e.message).split('\n').slice(0, 3).join(' | ')); } };
@@ -256,6 +258,52 @@ test('IN-32 keyboard: Enter adds the task from any entry field and Enter in the 
   assert.strictEqual(a.ctx.__D().length, 1); assert.strictEqual(enter.stopped, true);
   a.els.tAvail.value = '90'; a.els.tAvail.onkeydown(enter); assert.strictEqual(a.els.rest.hidden, false);
   const other = { key: 'a', preventDefault() { this.stopped = true; } }; a.els.tName.onkeydown(other); assert.ok(!other.stopped);
+});
+
+test('IN-33 adjustCapacity is pure: no mutation, day-off stays 0, clamped at 0, delta 0 = identical, bad delta throws', () => {
+  const s = deepFreezeIn({ now: 900, capacity: [120, 0, 60, 10], tasks: [] });
+  assert.strictEqual(JSON.stringify(TI.adjustCapacity(s, 15).capacity), '[135,0,75,25]');
+  assert.strictEqual(JSON.stringify(TI.adjustCapacity(s, -50).capacity), '[70,0,10,0]');
+  assert.strictEqual(JSON.stringify(TI.adjustCapacity(s, -999).capacity), '[0,0,0,0]');
+  assert.strictEqual(JSON.stringify(TI.adjustCapacity(s, 0)), JSON.stringify(s));
+  [2.5, '15', NaN, undefined].forEach((d) => assert.throws(() => TI.adjustCapacity(s, d), TypeError));
+});
+test('IN-34 what-if on user tasks = the real engine on adjusted capacity, and never touches the stored real state', () => {
+  const a = userScenario(); const real = JSON.stringify(a.ctx.__S());
+  a.els.wiPlus.onclick(); a.els.wiPlus.onclick();                                   // +30 -> 130 min/day -> C = 260 vs 270 needed
+  assert.strictEqual(JSON.stringify(a.ctx.__R()), JSON.stringify(TE.runTriageEngine(TI.adjustCapacity(a.ctx.__S(), 30))));
+  assert.ok(txt(a.els.status.innerHTML).includes('Short by 10m'), txt(a.els.status.innerHTML)); assert.strictEqual(JSON.stringify(a.ctx.__S()), real);
+  a.els.wiBack.onclick(); assert.ok(txt(a.els.status.innerHTML).includes('Short by 1h 10m'));
+});
+test('IN-35 what-if resets to your real time on add / remove / plan / use-my-own-tasks', () => {
+  const a = userScenario(); a.els.wiPlus.onclick(); a.add('Extra', '30', 2, '1'); assert.strictEqual(a.ctx.__W(), 0);
+  a.plan(100); a.els.wiMinus.onclick(); assert.strictEqual(a.ctx.__W(), -15); a.plan(100); assert.strictEqual(a.ctx.__W(), 0);
+  assert.strictEqual(JSON.stringify(a.ctx.__R()), JSON.stringify(TE.runTriageEngine(TI.buildState(a.ctx.__D(), 100))));
+  a.els.wiPlus.onclick(); a.rm('u1'); assert.strictEqual(a.ctx.__W(), 0); a.els.wiPlus.onclick(); a.els.useOwn.onclick(); assert.strictEqual(a.ctx.__W(), 0);
+});
+test('IN-36 adversarial: random sessions including what-if presses keep every invariant (engine equality, time conservation, recovery hidden)', () => {
+  let seed = 424242; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; }; const pick = (x) => x[Math.floor(rnd() * x.length)];
+  for (let s = 0; s < 30; s++) {
+    const a = boot(); let step = '';
+    for (let i = 0; i < 60; i++) {
+      const act = pick(['wi+', 'wi+', 'wi-', 'wi-', 'wiback', 'start', 'add', 'add', 'rm', 'plan', 'fell', 'reset']); step = act + '#' + i;
+      try {
+        if (act === 'wi+' || act === 'wi-' || act === 'wiback') { if (a.els.whatif.hidden) continue; a.els[act === 'wi+' ? 'wiPlus' : act === 'wi-' ? 'wiMinus' : 'wiBack'].onclick(); }
+        else if (act === 'start') a.start(); else if (act === 'add') a.add(pick(['A', 'B<b>', 'C']), pick(['15', '45', '90', '300']), pick(['1', '3', '5']), pick(['0', '1', '3']));
+        else if (act === 'rm') { const d = a.ctx.__D(); a.rm(d.length ? pick(d).id : 'u99'); }
+        else if (act === 'plan') a.plan(pick(['0', '30', '120', '300']));
+        else if (act === 'fell') { if (!a.els.behind.innerHTML.includes('id="fb"')) continue; a.els.fb.onclick(); a.doc.values = {}; [...a.els.behind.innerHTML.matchAll(/data-id="([^"]+)"/g)].forEach((m) => { a.doc.values[m[1]] = pick(['0', '10', '45', '999']); }); a.els.rp.onclick(); }
+        else a.els.reset.onclick();
+      } catch (e) { throw new Error('threw on ' + step + ': ' + e.message); }
+      const S = a.ctx.__S(), R = a.ctx.__R(), W = a.ctx.__W();
+      assert.ok(Math.abs(W) <= 120 && W % 15 === 0, 'what-if out of range after ' + step);
+      assert.strictEqual(JSON.stringify(R), JSON.stringify(TE.runTriageEngine(W ? TI.adjustCapacity(S, W) : S)), 'result != engine after ' + step);
+      assert.strictEqual(R.tasks.reduce((x, t) => x + t.remaining, 0), S.tasks.reduce((x, t) => x + Math.max(0, t.estimate - t.completed), 0), 'time lost after ' + step);
+      if (W !== 0) { assert.ok(!a.els.behind.innerHTML.includes('id="fb"') && a.els.changes.innerHTML === '', 'real recovery visible during what-if after ' + step); assert.ok(a.els.status.innerHTML.includes('WHAT-IF')); }
+      else if (!a.els.status.hidden) assert.ok(!a.els.status.innerHTML.includes('WHAT-IF'), 'stale WHAT-IF badge on a VISIBLE status after ' + step);   // a hidden status is re-rendered before it is shown again
+      assert.ok(!/NaN|undefined/.test(a.els.status.innerHTML + a.els.triage.innerHTML + a.els.wiLabel.textContent), 'bad text after ' + step);
+    }
+  }
 });
 
 console.log('Input tests: ' + pass + ' passed, ' + fail + ' failed');
