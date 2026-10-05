@@ -1,0 +1,7 @@
+{
+  "name": "Triage: Study Planner",
+  "description": "Deterministic study planner that tells the truth with Protect, Reduce, and Defer decisions.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
