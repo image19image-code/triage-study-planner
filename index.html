@@ -1076,6 +1076,93 @@ label {
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* Final product polish: make the result feel like a calm decision surface. */
+.status {
+  isolation: isolate;
+}
+.status::after {
+  content: "RESULT";
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: -1;
+  font: 700 10px/1 var(--sans);
+  letter-spacing: 0.18em;
+  color: var(--ink3);
+  opacity: 0.7;
+}
+.status.bad::after { color: var(--red); }
+.status.warn::after { color: var(--amber); }
+.status.ok::after { color: var(--green); }
+.dc {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 16px 18px 15px;
+  border-left-width: 5px;
+}
+.dc .dn {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dc .dt {
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.zone {
+  position: relative;
+}
+.zone + .zone {
+  padding-top: var(--s2);
+}
+.zone + .zone::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0 0 var(--s5);
+  background: var(--line-light);
+}
+.grp {
+  min-height: 28px;
+}
+.grp .hint {
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+#triage > .mut, #blocks > .mut {
+  display: block;
+  padding: var(--s4);
+  border: 1px dashed var(--line);
+  border-radius: var(--r1);
+  text-align: center;
+}
+#tasks.card {
+  border-color: var(--line);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-raised) 100%);
+}
+#taskList:empty + #demoNote:not(:empty) {
+  margin-top: 0;
+}
+button.primary, button.recover, .hero-cta {
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.08s ease;
+}
+button.primary:hover:not(:disabled), .hero-cta:hover {
+  box-shadow: 0 6px 18px -8px rgba(19, 20, 24, 0.5);
+  transform: translateY(-1px);
+}
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline-offset: 3px;
+}
+@media (max-width: 620px) {
+  .status::after { top: 15px; right: 16px; }
+  .dc { padding: 14px; }
+  .dc .dn { white-space: normal; }
+  .dc .dt { grid-column: 1 / -1; }
+  .dc .tag { justify-self: end; }
+  .grp { align-items: flex-start; flex-wrap: wrap; }
+  .grp .hint { flex-basis: 100%; margin-left: 12px; }
+}
 </style>
 </head>
 <body>
