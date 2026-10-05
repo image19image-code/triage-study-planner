@@ -175,13 +175,38 @@ h1 {
   font: italic 400 clamp(20px, 4.8vw, 28px)/1.3 var(--serif);
   color: var(--ink2);
 }
-.lead0 {
+  .lead0 {
   margin: var(--s4) 0 var(--s4);
   font-size: 16px;
   line-height: 1.6;
   max-width: 40em;
   color: var(--ink2);
-}
+  }
+  .hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin: var(--s4) 0 var(--s5);
+  }
+  .hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: var(--r1);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.12s ease, transform 0.06s ease;
+  }
+  .hero-cta:hover { background: var(--ink2); }
+  .hero-cta:active { transform: translateY(1px); }
+  .hero-actions .mut { font-size: 13px; }
+
 
 /* 3 Pillars Explainer */
 .pillars {
@@ -990,8 +1015,9 @@ label {
   .rec { padding: var(--s4); }
   .nums { gap: var(--s2); }
   .wi-val { font-size: 14px; min-width: 0; }
-}
-@media (max-width: 420px) {
+  .hero-actions { align-items: flex-start; flex-direction: column; gap: var(--s2); }
+  }
+  @media (max-width: 420px) {
   main { padding: var(--s3) var(--s3) 60px; }
   .frm { grid-template-columns: 1fr; }
   .nums { grid-template-columns: 1fr; gap: var(--s2); }
@@ -1022,6 +1048,10 @@ label {
     <h1>Triage</h1>
     <p class="tagline">Study planner that tells the truth.</p>
     <p class="lead0">Most planners accept impossible plans and set you up to fail. Triage checks physical reality first: it calculates whether your workload fits and decides what to protect, reduce, and defer.</p>
+    <div class="hero-actions">
+      <a class="hero-cta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
+      <span class="mut">Plan against the time you actually have.</span>
+    </div>
     <div class="truth-contrast" role="region" aria-label="Why Triage exists">
       <div class="contrast-col illusion">
         <span class="contrast-badge">Traditional Planners</span>
@@ -1029,7 +1059,7 @@ label {
       </div>
       <div class="contrast-col truth">
         <span class="contrast-badge">Triage Reality Law</span>
-        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Trim</b>, and what to <b>Defer</b> so your plan actually works.</p>
+        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Reduce</b>, and what to <b>Defer</b> so your plan actually works.</p>
       </div>
     </div>
     <div class="pillars" role="region" aria-label="Triage Decision System">
