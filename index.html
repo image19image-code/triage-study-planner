@@ -175,13 +175,38 @@ h1 {
   font: italic 400 clamp(20px, 4.8vw, 28px)/1.3 var(--serif);
   color: var(--ink2);
 }
-.lead0 {
+  .lead0 {
   margin: var(--s4) 0 var(--s4);
   font-size: 16px;
   line-height: 1.6;
   max-width: 40em;
   color: var(--ink2);
-}
+  }
+  .hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin: var(--s4) 0 var(--s5);
+  }
+  .hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: var(--r1);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.12s ease, transform 0.06s ease;
+  }
+  .hero-cta:hover { background: var(--ink2); }
+  .hero-cta:active { transform: translateY(1px); }
+  .hero-actions .mut { font-size: 13px; }
+
 
 /* 3 Pillars Explainer */
 .pillars {
@@ -295,7 +320,7 @@ h2 {
 }
 
 /* status: the core insight */
-.status {
+  .status {
   border-radius: var(--r3);
   padding: var(--s5) var(--s5) var(--s5);
   background: var(--surface);
@@ -304,8 +329,11 @@ h2 {
   margin-bottom: var(--s5);
   position: relative;
   overflow: hidden;
-}
-.status::before {
+  }
+  .status.bad { background: linear-gradient(135deg, var(--surface) 0%, var(--red-bg) 180%); }
+  .status.warn { background: linear-gradient(135deg, var(--surface) 0%, var(--amber-bg) 180%); }
+  .status.ok { background: linear-gradient(135deg, var(--surface) 0%, var(--green-bg) 180%); }
+  .status::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -339,8 +367,18 @@ h2 {
   max-width: 38em;
 }
 
-/* Bar meter */
-.bar {
+  /* Bar meter */
+  .bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-top: var(--s5);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink3);
+  }
+  .bar-label b { color: var(--ink2); font-variant-numeric: tabular-nums; }
+  .bar {
   display: flex;
   height: 14px;
   border-radius: 99px;
@@ -418,14 +456,24 @@ h2 {
   margin-bottom: var(--s5);
 }
 .zone:last-child { margin-bottom: 0; }
-.grp {
+  .grp {
   display: flex;
   align-items: center;
   gap: var(--s2);
   margin: 0 0 var(--s3);
   font: 700 18px/1.2 var(--serif);
   color: var(--ink);
-}
+  }
+  .grp::before {
+  content: "";
+  width: 4px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--ink3);
+  }
+  .zone:nth-child(1) .grp::before { background: var(--green); }
+  .zone:nth-child(2) .grp::before { background: var(--amber); }
+  .zone:nth-child(3) .grp::before { background: var(--ink3); }
 .grp .grp-mark {
   width: 8px; height: 8px;
   border-radius: 2px;
@@ -515,8 +563,9 @@ details.why {
   margin-top: 8px;
   border-top: 1px dashed var(--line);
   padding-top: 4px;
-}
-details.why summary {
+  }
+  details.why[open] { border-top-color: var(--focus); }
+  details.why summary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -642,14 +691,21 @@ details.why p {
 }
 
 /* Recovery: I Fell Behind */
-.rec {
-  background: var(--amber-bg);
+  .rec {
+  background: linear-gradient(135deg, var(--amber-bg), var(--surface));
   border: 1px solid var(--amber-line);
   border-radius: var(--r2);
   padding: var(--s5);
   box-shadow: var(--shadow);
-}
-.rec-t {
+  }
+  .rec-kicker {
+  color: var(--amber);
+  font: 700 11px/1 var(--sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: var(--s2);
+  }
+  .rec-t {
   font: 700 22px/1.2 var(--serif);
   margin-bottom: var(--s1);
   color: var(--ink);
@@ -864,12 +920,14 @@ label {
 }
 
 /* What-if widget */
-.wi {
+  .wi {
   margin-top: var(--s4);
   background: var(--surface);
   border: 1px solid var(--line);
-}
-.wi-t {
+  }
+  .wi.is-sim { border-color: var(--focus); box-shadow: 0 0 0 3px var(--focus-ring); }
+  .wi.is-sim .wi-t { color: var(--focus); }
+  .wi-t {
   font: 700 17px/1.2 var(--serif);
   margin-bottom: var(--s2);
   color: var(--ink);
@@ -888,12 +946,23 @@ label {
   font-size: 15px;
   color: var(--ink);
 }
-.tag.wi {
-  background: var(--amber-bg);
-  color: var(--amber);
-  border-color: var(--amber-line);
+  .status-note {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  color: var(--ink2);
+  background: var(--tint);
+  }
+  .tag.wi {
+  background: var(--focus-ring);
+  color: var(--focus);
+  border-color: var(--focus);
   margin-left: var(--s2);
-}
+  }
 .wi .back {
   margin-top: var(--s3);
   width: 100%;
@@ -990,8 +1059,9 @@ label {
   .rec { padding: var(--s4); }
   .nums { gap: var(--s2); }
   .wi-val { font-size: 14px; min-width: 0; }
-}
-@media (max-width: 420px) {
+  .hero-actions { align-items: flex-start; flex-direction: column; gap: var(--s2); }
+  }
+  @media (max-width: 420px) {
   main { padding: var(--s3) var(--s3) 60px; }
   .frm { grid-template-columns: 1fr; }
   .nums { grid-template-columns: 1fr; gap: var(--s2); }
@@ -1005,6 +1075,170 @@ label {
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+}
+
+/* Final product polish: make the result feel like a calm decision surface. */
+.status {
+  isolation: isolate;
+}
+.status::after {
+  content: "RESULT";
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: -1;
+  font: 700 10px/1 var(--sans);
+  letter-spacing: 0.18em;
+  color: var(--ink3);
+  opacity: 0.7;
+}
+.status.bad::after { color: var(--red); }
+.status.warn::after { color: var(--amber); }
+.status.ok::after { color: var(--green); }
+.dc {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 16px 18px 15px;
+  border-left-width: 5px;
+}
+.dc .dn {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dc .dt {
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.zone {
+  position: relative;
+}
+.zone + .zone {
+  padding-top: var(--s2);
+}
+.zone + .zone::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0 0 var(--s5);
+  background: var(--line-light);
+}
+.grp {
+  min-height: 28px;
+}
+.grp .hint {
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+#triage > .mut, #blocks > .mut {
+  display: block;
+  padding: var(--s4);
+  border: 1px dashed var(--line);
+  border-radius: var(--r1);
+  text-align: center;
+}
+#tasks.card {
+  border-color: var(--line);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-raised) 100%);
+}
+#taskList:empty + #demoNote:not(:empty) {
+  margin-top: 0;
+}
+button.primary, button.recover, .hero-cta {
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.08s ease;
+}
+button.primary:hover:not(:disabled), .hero-cta:hover {
+  box-shadow: 0 6px 18px -8px rgba(19, 20, 24, 0.5);
+  transform: translateY(-1px);
+}
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline-offset: 3px;
+}
+@media (max-width: 620px) {
+  .status::after { top: 15px; right: 16px; }
+  .dc { padding: 14px; }
+  .dc .dn { white-space: normal; }
+  .dc .dt { grid-column: 1 / -1; }
+  .dc .tag { justify-self: end; }
+  .grp { align-items: flex-start; flex-wrap: wrap; }
+  .grp .hint { flex-basis: 100%; margin-left: 12px; }
+}
+
+/* Final polish pass: one calm visual language from input to replan. */
+.top-bar {
+  margin-bottom: var(--s5);
+}
+.brand-pill {
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--surface) 82%, var(--tint));
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero {
+  padding-bottom: var(--s5);
+  margin-bottom: var(--s6);
+}
+.hero-mark { color: var(--focus); }
+.lead0 { max-width: 36em; }
+.hero-actions { margin: var(--s5) 0 var(--s4); }
+.hero-cta { border-radius: 10px; }
+.truth-contrast { margin-top: var(--s5); }
+.pillars { margin-top: var(--s4); }
+.pillar-card { min-height: 142px; }
+.legend { padding-top: var(--s3); }
+h2 { margin-top: var(--s7); }
+.card { border-radius: var(--r2); }
+#tasks.card { padding: var(--s4); }
+.entry { background: var(--surface-raised); }
+input[type=text], input[type=number], select {
+  background: var(--surface);
+  border-color: var(--line);
+}
+input[type=text]:hover, input[type=number]:hover, select:hover {
+  border-color: var(--ink3);
+}
+button.primary {
+  margin-top: var(--s3);
+  min-height: 48px;
+  border-radius: 10px;
+}
+#useOwn { margin-top: var(--s4) !important; }
+.status { margin-top: var(--s6); }
+.status .lead { max-width: 34em; }
+.nums > div { min-height: 78px; }
+.dc { border-radius: 10px; }
+.dc .dn { letter-spacing: -0.01em; }
+.tag { line-height: 1.2; }
+.rec { border-radius: var(--r2); }
+.rec .fr strong { font-variant-numeric: tabular-nums; }
+.wi { border-radius: var(--r2); }
+.wi .back { border-width: 1px; }
+.trow button { background: transparent; }
+
+@media (max-width: 620px) {
+  main { padding-bottom: 72px; }
+  .top-bar { margin-bottom: var(--s4); }
+  .brand-pill { max-width: 100%; }
+  .hero { padding-bottom: var(--s4); margin-bottom: var(--s5); }
+  .truth-contrast { margin-top: var(--s4); }
+  .pillar-card { min-height: 0; padding: var(--s3) var(--s4); }
+  h2 { margin-top: var(--s6); }
+  .status { margin-top: var(--s5); }
+  .status .big { max-width: 12ch; }
+  .nums > div { min-height: 0; padding: 12px; }
+  .dc .tag { margin-top: 2px; }
+  .rec .fr { align-items: flex-start; flex-direction: column; gap: var(--s1); }
+}
+@media (max-width: 420px) {
+  .brand-pill { font-size: 10px; }
+  .hero-actions .mut { line-height: 1.35; }
+  #tasks.card { padding: var(--s3); }
+  .entry { padding: var(--s3); }
+  .preset-chip { max-width: 100%; white-space: normal; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 </style>
 </head>
@@ -1022,6 +1256,10 @@ label {
     <h1>Triage</h1>
     <p class="tagline">Study planner that tells the truth.</p>
     <p class="lead0">Most planners accept impossible plans and set you up to fail. Triage checks physical reality first: it calculates whether your workload fits and decides what to protect, reduce, and defer.</p>
+    <div class="hero-actions">
+      <a class="hero-cta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
+      <span class="mut">Plan against the time you actually have.</span>
+    </div>
     <div class="truth-contrast" role="region" aria-label="Why Triage exists">
       <div class="contrast-col illusion">
         <span class="contrast-badge">Traditional Planners</span>
@@ -1029,7 +1267,7 @@ label {
       </div>
       <div class="contrast-col truth">
         <span class="contrast-badge">Triage Reality Law</span>
-        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Trim</b>, and what to <b>Defer</b> so your plan actually works.</p>
+        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Reduce</b>, and what to <b>Defer</b> so your plan actually works.</p>
       </div>
     </div>
     <div class="pillars" role="region" aria-label="Triage Decision System">
@@ -1138,7 +1376,8 @@ function renderStatus() {
   headText = head;
   const scale = Math.max(s.workload, s.capacity, 1), pc = (x) => Math.round((x / scale) * 1000) / 10;
   const covered = Math.min(s.workload, s.capacity), gap = Math.max(0, s.workload - s.capacity);
-  $('status').innerHTML = '<div class="status ' + cls + (flash ? ' fresh' : '') + '"><div class="eyebrow">Reality check' + (whatIf ? '<span class="tag wi">WHAT-IF</span>' : '') + '</div><div class="big">' + head + '</div><div class="lead">' + sub + '</div>' +
+  $('status').innerHTML = '<div class="status ' + cls + (flash ? ' fresh' : '') + '"><div class="eyebrow">Reality check' + (whatIf ? '<span class="tag wi">WHAT-IF</span>' : '<span class="status-note">BASELINE</span>') + '</div><div class="big">' + head + '</div><div class="lead">' + sub + '</div>' +
+    '<div class="bar-label"><span>Workload against available time</span><b>' + (gap ? fmt(gap) + ' missing' : 'Enough time') + '</b></div>' +
     '<div class="bar"><span class="have" style="width:' + pc(covered) + '%"></span><span class="gap" style="width:' + pc(gap) + '%"></span></div>' +
     '<div class="key"><span><span class="k have"></span>Covered by your time</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
     '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div></div>';
@@ -1180,11 +1419,11 @@ function renderBehind(open) {
   const d = planDay();
   if (d !== 0) { $('behind').innerHTML = '<div class="card mut">' + (prev && d !== null ? 'Plan rebuilt from what you actually did. Your next session is ' + dayName(d).toLowerCase() + '.' : 'Nothing is planned for today. Come back when a session is due.') + '</div>'; return; }
   if (!open) {
-    $('behind').innerHTML = '<div class="rec"><div class="rec-t">Plans slip. That is expected.</div><div class="mut">Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty.</div><button type="button" class="recover" id="fb">I FELL BEHIND</button></div>';
+    $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">Recovery mode</div><div class="rec-t">Plans slip. That is expected.</div><div class="mut">Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty, no starting over.</div><button type="button" class="recover" id="fb">I FELL BEHIND</button></div>';
     $('fb').onclick = () => renderBehind(true); return;
   }
   const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
-  $('behind').innerHTML = '<div class="rec"><div class="rec-t">What actually happened today?</div><div class="mut">Enter the minutes you really worked on each block.</div>' + Object.keys(plannedMin).map((id) =>
+  $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">Recovery mode · today</div><div class="rec-t">What actually happened today?</div><div class="mut">Enter the minutes you really worked on each block. Triage will protect the important work and rebuild what remains.</div>' + Object.keys(plannedMin).map((id) =>
     '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
     '<button type="button" class="primary" id="rp">REPLAN</button></div>';
   $('rp').onclick = () => {
@@ -1223,6 +1462,7 @@ function renderTasks() {
 const wiText = () => (whatIf ? (whatIf > 0 ? '+' : '\u2212') + Math.abs(whatIf) + ' min per study day' : 'Your real time');
 function renderWhatIf() {
   $('wiLabel').textContent = wiText(); $('wiBack').hidden = whatIf === 0;
+  $('whatif').className = 'card wi' + (whatIf !== 0 ? ' is-sim' : '');
   $('wiMinus').disabled = whatIf <= -LIMIT; $('wiPlus').disabled = whatIf >= LIMIT;
 }
 function setWhatIf(v) {
