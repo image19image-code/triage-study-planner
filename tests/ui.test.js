@@ -34,29 +34,29 @@ test('UI-01 boots without errors; Reality Check 10h / 8h / 2h', () => {
 });
 test('UI-02 Triage groups match the demo', () => {
   const t = txt(boot().els.triage.innerHTML);
-  ['Math homework FULL 45m', 'Math quiz prep FULL 1h', 'Biology exam PROTECTED 2h 30m', 'History project FULL 2h 30m',
-    'English essay 1h 30m → 45m', 'Chemistry lab 45m → 30m', 'Physics worksheet DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
+  ['Practice problem set FULL 45m', 'Presentation prep FULL 1h', 'Assessment preparation PROTECTED 2h 30m', 'Research project FULL 2h 30m',
+    'Major assignment 1h 30m → 45m', 'Reading assignment 45m → 30m', 'Review worksheet DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
 });
 test('UI-03 priority blocks 15:00-15:45 / 15:45-16:30 / 16:30-17:00', () => {
   const t = txt(boot().els.blocks.innerHTML);
-  ['15:00 – 15:45 Math homework', '15:45 – 16:30 English essay', '16:30 – 17:00 Math quiz prep'].forEach((x) => assert.ok(t.includes(x), x));
+  ['15:00 – 15:45 Practice problem set', '15:45 – 16:30 Major assignment', '16:30 – 17:00 Presentation prep'].forEach((x) => assert.ok(t.includes(x), x));
 });
 test('UI-04 CRITICAL 45/25/0 -> Short by 2h 50m and ONLY real changes', () => {
-  const a = fell({ math: '45', eng: '25', quiz: '0' }); const c = changes(a);
+  const a = fell({ practice: '45', assignment: '25', presentation: '0' }); const c = changes(a);
   assert.ok(txt(a.els.status.innerHTML).includes('Short by 2h 50m'));
-  assert.ok(c.includes('English essay') && c.includes('Chemistry lab') && c.includes('deferred'), c);
-  ['Math homework', 'Math quiz', 'Physics', 'Biology', 'History'].forEach((x) => assert.ok(!c.includes(x), 'false change: ' + x + ' | ' + c));
+  assert.ok(c.includes('Major assignment') && c.includes('Reading assignment') && c.includes('deferred'), c);
+  ['Practice problem set', 'Presentation prep', 'Review worksheet', 'Assessment preparation', 'Research project'].forEach((x) => assert.ok(!c.includes(x), 'false change: ' + x + ' | ' + c));
 });
 test('UI-05 executing the plan literally 45/45/30 -> no fake changes', () => {
-  const c = changes(fell({ math: '45', eng: '45', quiz: '30' }));
+  const c = changes(fell({ practice: '45', assignment: '45', presentation: '30' }));
   assert.ok(c.includes('No change needed'), c);
   ['kept', 'reduced to 0m', 'done'].forEach((x) => assert.ok(!c.includes(x), 'fake: ' + x + ' | ' + c));
 });
-test('UI-06 doing more than planned (Math 60) does not create a change for Math', () => {
-  assert.ok(!changes(fell({ math: '60' })).includes('Math homework'));
+test('UI-06 doing more than planned (Practice 60) does not create a change for Practice', () => {
+  assert.ok(!changes(fell({ practice: '60' })).includes('Practice problem set'));
 });
 test('UI-07 Why? text: no stale "tasks due by", no raw D-labels, deferred tasks not counted', () => {
-  const a = fell({ math: '45', eng: '25', quiz: '0' }); const b = boot();
+  const a = fell({ practice: '45', assignment: '25', presentation: '0' }); const b = boot();
   [b, a].forEach((x) => {
     const h = x.els.triage.innerHTML; assert.ok(!/\bD\d+\b/.test(h), 'raw D-label in UI');
     x.ctx.__R().tasks.filter((t) => ['reduced', 'deferred'].includes(t.decision)).forEach((t) => {
@@ -64,54 +64,54 @@ test('UI-07 Why? text: no stale "tasks due by", no raw D-labels, deferred tasks 
     });
   });
 });
-test('UI-08 Why? for English/Chemistry names the candidates only (Physics already deferred)', () => {
+test('UI-08 Why? for Assignment/Reading names the candidates only (Review already deferred)', () => {
   const R = boot().ctx.__R(); const get = (id) => R.tasks.find((t) => t.id === id).reason;
-  assert.ok(/importance 3 .*still scheduled by D8/.test(get('eng')) && /importance 3 .*still scheduled by D8/.test(get('chem')));
-  assert.ok(/importance 2 .*still scheduled by D5/.test(get('phys')));
-  assert.strictEqual(get('bio'), 'Protected (importance 5): never cut.');
+  assert.ok(/importance 3 .*still scheduled by D8/.test(get('assignment')) && /importance 3 .*still scheduled by D8/.test(get('reading')));
+  assert.ok(/importance 2 .*still scheduled by D5/.test(get('review')));
+  assert.strictEqual(get('assessment'), 'Protected (importance 5): never cut.');
 });
 test('UI-09 mathematical verification (critical scenario)', () => {
-  const a = fell({ math: '45', eng: '25', quiz: '0' }); const R = a.ctx.__R(), S = a.ctx.__S();
+  const a = fell({ practice: '45', assignment: '25', presentation: '0' }); const R = a.ctx.__R(), S = a.ctx.__S();
   assert.strictEqual(S.tasks.reduce((s, t) => s + t.completed, 0), 70);
   assert.strictEqual(S.tasks.reduce((s, t) => s + t.estimate, 0) - 70, 530);
   assert.strictEqual(R.summary.workload, 530); assert.strictEqual(R.summary.capacity, 360); assert.strictEqual(R.summary.shortfall, 170);
   assert.strictEqual(R.summary.allocated, 360); assert.strictEqual(R.summary.totalCut, 170);
   const cut = Object.fromEntries(R.tasks.map((t) => [t.id, t.cut]));
-  assert.deepStrictEqual([cut.phys, cut.eng, cut.chem], [60, 65, 45]);
-  ['bio', 'quiz', 'hist'].forEach((id) => assert.strictEqual(cut[id], 0));
+  assert.deepStrictEqual([cut.review, cut.assignment, cut.reading], [60, 65, 45]);
+  ['assessment', 'presentation', 'project'].forEach((id) => assert.strictEqual(cut[id], 0));
 });
 test('UI-10 determinism (5 fresh runs) + reset + replan again', () => {
-  const run = () => JSON.stringify(fell({ math: '45', eng: '25', quiz: '0' }).ctx.__R());
+  const run = () => JSON.stringify(fell({ practice: '45', assignment: '25', presentation: '0' }).ctx.__R());
   assert.strictEqual(new Set([1, 2, 3, 4, 5].map(run)).size, 1);
-  const b = fell({ math: '45', eng: '25', quiz: '0' }); const first = JSON.stringify(b.ctx.__R());
+  const b = fell({ practice: '45', assignment: '25', presentation: '0' }); const first = JSON.stringify(b.ctx.__R());
   b.els.reset.onclick(); assert.strictEqual(JSON.stringify(b.ctx.__R()), JSON.stringify(boot().ctx.__R()));
   assert.strictEqual(txt(b.els.changes.innerHTML), '');
-  b.els.fb.onclick(); b.doc.values = { math: '45', eng: '25', quiz: '0' }; b.els.rp.onclick();
+  b.els.fb.onclick(); b.doc.values = { practice: '45', assignment: '25', presentation: '0' }; b.els.rp.onclick();
   assert.strictEqual(JSON.stringify(b.ctx.__R()), first);
 });
 test('UI-11 bad inputs never throw or print NaN/undefined', () => {
-  [{ math: '-1', eng: '-1', quiz: '-1' }, { eng: '25.5' }, { eng: '' }, { eng: 'abc' }, { math: '999999', eng: '999999', quiz: '999999' }, { math: '0', eng: '0', quiz: '0' }].forEach((v) => {
+  [{ practice: '-1', assignment: '-1', presentation: '-1' }, { assignment: '25.5' }, { assignment: '' }, { assignment: 'abc' }, { practice: '999999', assignment: '999999', presentation: '999999' }, { practice: '0', assignment: '0', presentation: '0' }].forEach((v) => {
     const a = fell(v); const all = a.els.status.innerHTML + a.els.triage.innerHTML + a.els.blocks.innerHTML + a.els.changes.innerHTML;
     assert.ok(!/NaN|undefined|null/.test(all), JSON.stringify(v));
   });
 });
 
-test('UI-12 regression: critical 45/25/0 -> 8h 50m needed / 6h available / 2h 50m shortfall; only English + Chemistry change', () => {
-  const a = fell({ math: '45', eng: '25', quiz: '0' }); const s = txt(a.els.status.innerHTML);
+test('UI-12 regression: critical 45/25/0 -> 8h 50m needed / 6h available / 2h 50m shortfall; only Major assignment + Reading assignment change', () => {
+  const a = fell({ practice: '45', assignment: '25', presentation: '0' }); const s = txt(a.els.status.innerHTML);
   assert.ok(s.includes('Short by 2h 50m') && s.includes('8h 50m needed') && s.includes('6h available') && s.includes('2h 50m shortfall'), s);
-  const c = changes(a); assert.ok(/English essay: planned 20m \u2192 deferred/.test(c) && /Chemistry lab: planned 30m \u2192 deferred/.test(c), c);
+  const c = changes(a); assert.ok(/Major assignment: planned 20m \u2192 deferred/.test(c) && /Reading assignment: planned 30m \u2192 deferred/.test(c), c);
   assert.strictEqual((c.match(/\u2192/g) || []).length, 2, c);
 });
 
 test('UI-13 status bar: dark = covered, red = missing, proportions match the numbers (demo 8h of 10h)', () => {
   const h = boot().els.status.innerHTML;
   assert.ok(h.includes('class="have" style="width:80%"') && h.includes('class="gap" style="width:20%"'), h);
-  const r = fell({ math: '45', eng: '25', quiz: '0' }).els.status.innerHTML;        // 530 needed, 360 covered, 170 missing
+  const r = fell({ practice: '45', assignment: '25', presentation: '0' }).els.status.innerHTML;        // 530 needed, 360 covered, 170 missing
   assert.ok(r.includes('style="width:67.9%"') && r.includes('style="width:32.1%"'), r);
 });
 test('UI-14 only the first priority block says "Start here"; Defer zone never claims time', () => {
   const a = boot(); const b = a.els.blocks.innerHTML;
-  assert.strictEqual((b.match(/Start here/g) || []).length, 1); assert.ok(b.indexOf('Start here') < b.indexOf('English essay'));
+  assert.strictEqual((b.match(/Start here/g) || []).length, 1); assert.ok(b.indexOf('Start here') < b.indexOf('Major assignment'));
   assert.ok(/Defer<span class="hint">left out of this plan/.test(a.els.triage.innerHTML));
 });
 
@@ -124,23 +124,23 @@ test('UI-15 Why? is short, human, states the numbers, and says it is determinist
   assert.ok(t.includes('Importance 5 is never cut') && t.includes('shortens it instead of dropping it'));
 });
 test('UI-16 after REPLAN the recovery panel explains instead of looking broken', () => {
-  const a = fell({ math: '45', eng: '25', quiz: '0' }); const b = txt(a.els.behind.innerHTML);
+  const a = fell({ practice: '45', assignment: '25', presentation: '0' }); const b = txt(a.els.behind.innerHTML);
   assert.ok(b.includes('Plan rebuilt from what you actually did. Your next session is tomorrow.'), b);
 });
 
 test('UI-17 what-if on the demo: +15 -> short 15m, +30 -> Realistic, -15 -> short 3h 45m, Back -> the exact golden demo', () => {
   const a = boot(); const st = () => txt(a.els.status.innerHTML); const golden = JSON.stringify(a.ctx.__R());
-  assert.strictEqual(a.els.wiLabel.textContent, 'Your real time'); assert.strictEqual(a.els.wiBack.hidden, true);
+  assert.strictEqual(a.els.wiLabel.textContent, 'Sample baseline capacity'); assert.strictEqual(a.els.wiBack.hidden, true);
   a.els.wiPlus.onclick(); assert.ok(st().includes('Short by 15m') && st().includes('WHAT-IF'), st()); assert.strictEqual(a.els.wiLabel.textContent, '+15 min per study day');
   a.els.wiPlus.onclick(); assert.ok(st().includes('Realistic') && !st().includes('Short by'), st());
   a.els.wiBack.onclick(); assert.strictEqual(JSON.stringify(a.ctx.__R()), golden); assert.ok(st().includes('Short by 2h') && !st().includes('WHAT-IF')); assert.strictEqual(a.els.wiBack.hidden, true);
   a.els.wiMinus.onclick(); assert.ok(st().includes('Short by 3h 45m'), st());
-  assert.ok(/English essay DEFERRED/.test(txt(a.els.triage.innerHTML)));   // less time -> English now deferred instead of reduced
+  assert.ok(/Major assignment DEFERRED/.test(txt(a.els.triage.innerHTML)));   // less time -> assignment now deferred instead of reduced
 });
 test('UI-18 what-if never mixes with real recovery: I FELL BEHIND and "Your plan changed" are hidden, then restored', () => {
   const a = boot(); a.els.wiPlus.onclick();
   assert.ok(!a.els.behind.innerHTML.includes('id="fb"') && /what-if, not your real plan/.test(a.els.behind.innerHTML)); a.els.wiBack.onclick(); assert.ok(a.els.behind.innerHTML.includes('id="fb"'));
-  const b = fell({ math: '45', eng: '25', quiz: '0' }); const real = JSON.stringify(b.ctx.__R()), ch = changes(b); assert.ok(ch.includes('English essay'));
+  const b = fell({ practice: '45', assignment: '25', presentation: '0' }); const real = JSON.stringify(b.ctx.__R()), ch = changes(b); assert.ok(ch.includes('Major assignment'));
   b.els.wiPlus.onclick(); assert.strictEqual(b.els.changes.innerHTML, ''); b.els.wiBack.onclick();
   assert.strictEqual(JSON.stringify(b.ctx.__R()), real); assert.strictEqual(changes(b), ch);
 });
@@ -149,7 +149,7 @@ test('UI-19 what-if is clamped to +-120, disables its buttons at the limit, and 
   assert.strictEqual(a.els.wiLabel.textContent, '+120 min per study day'); assert.strictEqual(a.els.wiPlus.disabled, true); assert.strictEqual(a.els.wiMinus.disabled, false);
   for (let i = 0; i < 20; i++) a.els.wiMinus.onclick(); assert.strictEqual(a.els.wiLabel.textContent, '\u2212120 min per study day'); assert.strictEqual(a.els.wiMinus.disabled, true);
   assert.ok(txt(a.els.status.innerHTML).includes('Still impossible'));
-  a.els.reset.onclick(); assert.strictEqual(a.els.wiLabel.textContent, 'Your real time'); assert.ok(txt(a.els.status.innerHTML).includes('Short by 2h'));
+  a.els.reset.onclick(); assert.strictEqual(a.els.wiLabel.textContent, 'Sample baseline capacity'); assert.ok(txt(a.els.status.innerHTML).includes('Short by 2h'));
 });
 
 console.log('UI tests: ' + pass + ' passed, ' + fail + ' failed');

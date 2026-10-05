@@ -1240,6 +1240,325 @@ button.primary {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+/* ---- Modern System Styles: Nav, Today Focus, Horizon, Scenarios, Data ---- */
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  margin-bottom: var(--s4);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.app-nav::-webkit-scrollbar { display: none; }
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  text-decoration: none;
+  transition: all 0.12s ease;
+}
+.nav-tab:hover {
+  background: var(--tint-hover);
+  color: var(--ink);
+  border-color: var(--ink3);
+}
+
+/* Today Focus Dashboard */
+.today-panel {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-raised) 100%);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--ink);
+  border-radius: var(--r2);
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s5);
+  box-shadow: var(--shadow);
+}
+.today-panel.focus-active {
+  border-left-color: var(--green);
+}
+.today-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+.today-title {
+  font: 700 13px/1 var(--sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.today-lead-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s2) var(--s4);
+  align-items: center;
+  padding: var(--s3) var(--s4);
+  background: var(--surface);
+  border-radius: var(--r1);
+  border: 1px solid var(--line);
+  margin-bottom: var(--s3);
+}
+.today-lead-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--serif);
+}
+.today-lead-meta {
+  font-size: 14px;
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+}
+.today-meter {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: var(--s2);
+}
+.today-meter-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--tint);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+}
+.today-meter-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.3s ease;
+}
+
+/* Planning Horizon & Week at a Glance */
+.horizon-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: var(--s5);
+  margin-bottom: var(--s5);
+  box-shadow: var(--shadow);
+}
+.buffer-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: 12px 16px;
+  border-radius: var(--r1);
+  margin-bottom: var(--s4);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.buffer-banner.robust { background: var(--green-bg); border: 1px solid var(--green-line); color: var(--green); }
+.buffer-banner.tight { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber); }
+.buffer-banner.shortfall { background: var(--red-bg); border: 1px solid var(--red-line); color: var(--red); }
+.horizon-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--s2);
+}
+.hday-card {
+  padding: 12px;
+  border-radius: var(--r1);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.12s ease;
+}
+.hday-card:hover { border-color: var(--ink2); }
+.hday-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink3); }
+.hday-stat { font-size: 16px; font-weight: 700; font-family: var(--serif); color: var(--ink); font-variant-numeric: tabular-nums; }
+.hday-bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; display: flex; }
+.hday-fill { height: 100%; background: var(--ink); }
+.hday-tag { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
+.hday-tag.full { background: var(--tint); color: var(--ink2); }
+.hday-tag.flex { background: var(--green-bg); color: var(--green); }
+.hday-tag.rest { background: transparent; color: var(--ink3); border: 1px dashed var(--line); }
+
+/* Scenario Comparisons */
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--s2);
+  margin-top: var(--s4);
+}
+.scenario-card {
+  padding: 12px 14px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--r1);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+}
+.scenario-card:hover {
+  border-color: var(--focus);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+.scenario-card.active {
+  border-color: var(--focus);
+  background: var(--surface);
+  box-shadow: 0 0 0 2px var(--focus);
+}
+.scenario-delta { font-size: 14px; font-weight: 700; color: var(--ink); }
+.scenario-result { font-size: 12px; margin-top: 4px; color: var(--ink2); line-height: 1.35; }
+
+/* Data Control & Export */
+.data-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: var(--s5);
+  margin-top: var(--s6);
+  box-shadow: var(--shadow);
+}
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+.btn-sm {
+  min-height: 38px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.storage-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: var(--s3);
+}
+.storage-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* Modal styles for JSON Import/Export */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 15, 18, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s4);
+  z-index: 10000;
+}
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--s5);
+  box-shadow: var(--shadow-lg);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s3);
+}
+.modal-title {
+  font: 700 20px/1.2 var(--serif);
+  color: var(--ink);
+}
+.modal-textarea {
+  width: 100%;
+  min-height: 140px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding: 10px;
+  border-radius: var(--r1);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  resize: vertical;
+}
+/* ---- State-Aware Mode Banner ---- */
+.mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: 12px 16px;
+  margin-bottom: var(--s4);
+  border-radius: var(--r1);
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+.mode-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mode-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--r1);
+}
+.mode-tag.demo {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid var(--amber-line);
+}
+.mode-tag.user {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green-line);
+}
+.mode-text {
+  color: var(--ink2);
+  font-weight: 500;
+}
+.btn-mode-switch {
+  font: 600 12.5px/1 var(--sans);
+  padding: 7px 13px;
+  border-radius: var(--r1);
+  border: 1px solid var(--line);
+  background: var(--tint);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-mode-switch:hover {
+  background: var(--tint-hover);
+  border-color: var(--ink3);
+}
 </style>
 </head>
 <body>
@@ -1251,13 +1570,24 @@ button.primary {
       <span>Deterministic · Reality-Grounded · No AI</span>
     </div>
   </div>
+  <nav class="app-nav" aria-label="Section navigation">
+    <a href="#status" class="nav-tab">Reality Check</a>
+    <a href="#todayCard" class="nav-tab">Today Focus</a>
+    <a href="#triage" class="nav-tab">Triage Decisions</a>
+    <a href="#horizonCard" class="nav-tab">Planning Horizon</a>
+    <a href="#whatif" class="nav-tab">What-If Lab</a>
+    <a href="#behind" class="nav-tab">Recovery</a>
+    <a href="#tt" class="nav-tab"><span id="navTasksLabel">Work Queue</span></a>
+    <a href="#dataPanel" class="nav-tab">Data &amp; Backup</a>
+  </nav>
+  <div id="modeBanner"></div>
   <header class="hero">
     <span class="hero-mark">Triage Study Planner</span>
     <h1>Triage</h1>
     <p class="tagline">Study planner that tells the truth.</p>
     <p class="lead0">Most planners accept impossible plans and set you up to fail. Triage checks physical reality first: it calculates whether your workload fits and decides what to protect, reduce, and defer.</p>
     <div class="hero-actions">
-      <a class="hero-cta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
+      <a class="hero-cta" id="heroCta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
       <span class="mut">Plan against the time you actually have.</span>
     </div>
     <div class="truth-contrast" role="region" aria-label="Why Triage exists">
@@ -1292,14 +1622,15 @@ button.primary {
   <div class="sr" id="announce" aria-live="polite"></div>
   <div id="status" tabindex="-1"></div>
   <div class="card wi" id="whatif">
-    <div class="wi-t">What if your time changed?</div>
-    <p class="mut" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.</p>
+    <div class="wi-t">What if study time changed?</div>
+    <p class="mut" id="wiDesc" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting daily study capacity reshapes Protect, Reduce, and Defer decisions without altering your baseline plan.</p>
     <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
     <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
+    <div id="scenarioMatrix" class="scenario-grid" style="margin-top:14px"></div>
   </div>
   <div id="empty" class="card empty" hidden><b>Nothing planned yet</b>Add your tasks below, enter your study time, then press PLAN MY TIME.</div>
 
-  <h2 id="tt">Your tasks <span id="taskCount" class="count"></span></h2>
+  <h2 id="tt"><span id="taskHeadingLabel">Sample tasks</span> <span id="taskCount" class="count"></span></h2>
   <div class="card" id="tasks">
     <div id="taskList"></div>
     <div id="demoNote" class="mut" style="margin-top:12px"></div>
@@ -1307,7 +1638,7 @@ button.primary {
     <div id="form" hidden>
       <div class="entry">
         <div class="frm">
-          <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry lab report" aria-describedby="formErr"></div>
+          <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Research project report" aria-describedby="formErr"></div>
           <div><label for="tEst">Time needed (min)</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 60" aria-describedby="formErr"></div>
           <div><label for="tImp">Importance</label><select id="tImp"><option value="1">1 low</option><option value="2">2</option><option value="3" selected>3 normal</option><option value="4">4</option><option value="5">5 never cut</option></select></div>
           <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today, 1 = tomorrow" aria-describedby="formErr"></div>
@@ -1318,9 +1649,12 @@ button.primary {
         </div>
         <div class="presets-bar" style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
           <span class="mut" style="font-size:12px;font-weight:600">Quick presets:</span>
-          <button type="button" class="preset-chip" id="preExam">+ Biology Exam (90m, Imp 5)</button>
-          <button type="button" class="preset-chip" id="preEssay">+ History Essay (120m, Imp 3)</button>
-          <button type="button" class="preset-chip" id="preQuiz">+ Math Problem Set (45m, Imp 2)</button>
+          <button type="button" class="preset-chip" id="preExam">+ Assessment Preparation (90m, Imp 5)</button>
+          <button type="button" class="preset-chip" id="preEssay">+ Research Project (120m, Imp 3)</button>
+          <button type="button" class="preset-chip" id="preQuiz">+ Practice Problem Set (45m, Imp 2)</button>
+          <button type="button" class="preset-chip" id="preProject">+ Major Assignment (120m, Imp 4, Due 3d)</button>
+          <button type="button" class="preset-chip" id="preReview">+ Review Worksheet (60m, Imp 5, Due 1d)</button>
+          <button type="button" class="preset-chip" id="preReading">+ Reading Assignment (45m, Imp 1, Due 1d)</button>
         </div>
         <div class="err" id="formErr" role="alert"></div>
         <div class="ok" id="formMsg" role="status"></div>
@@ -1334,23 +1668,179 @@ button.primary {
   </div>
 
   <div id="rest">
-    <h2>Triage</h2><div class="card" id="triage"></div>
+    <div id="todayCard"></div>
+    <h2>Triage Decisions</h2><div class="card" id="triage"></div>
+    <div id="horizonCard"></div>
     <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
     <h2>If you fall behind</h2><div id="behind"></div>
     <div id="changes"></div>
+    <div id="dataPanel"></div>
   </div>
+  <div id="modalContainer" hidden></div>
   <div class="foot"><button type="button" id="reset">Reset demo</button><span>Every decision comes from a deterministic engine. No AI makes them.</span></div>
 </main>
 
 <script src="engine/triage-engine.js"></script>
 <script src="engine/task-input.js"></script>
 <script>
+const TriageSystem = (function () {
+  function computeHorizon(res, st) {
+    const cap = (st && st.capacity) || [];
+    return cap.map((avail, d) => {
+      const dayInfo = (res && res.days && res.days.find((x) => x.day === d)) || { avail, used: 0, flex: avail };
+      const dBlocks = (res && res.blocks && res.blocks.filter((b) => b.day === d)) || [];
+      let status = 'balanced';
+      if (dayInfo.avail === 0) status = 'rest';
+      else if (dayInfo.flex === 0) status = 'full';
+      else if (dayInfo.flex < 15) status = 'tight';
+      return {
+        day: d,
+        avail: dayInfo.avail,
+        used: dayInfo.used,
+        flex: dayInfo.flex,
+        status,
+        blocks: dBlocks,
+      };
+    });
+  }
+
+  function computeBufferDiagnosis(res) {
+    if (!res) return { status: 'unknown', title: 'Plan not generated', desc: '', minSlack: 0, shortfallMinutes: 0 };
+    if (res.status === 'impossible') {
+      const need = (res.stillImpossible && res.stillImpossible.need) || 0;
+      return {
+        status: 'impossible',
+        shortfallMinutes: need,
+        title: 'Still impossible (' + fmt(need) + ' short)',
+        desc: 'Even after all permitted reductions and deferrals, this plan cannot fit.',
+        minSlack: 0,
+      };
+    }
+    if (res.summary && res.summary.shortfall > 0) {
+      return {
+        status: 'shortfall',
+        shortfallMinutes: res.summary.shortfall,
+        title: 'Short by ' + fmt(res.summary.shortfall),
+        desc: 'Workload exceeds capacity before deadlines. Triage has trimmed or deferred work to reconcile.',
+        minSlack: 0,
+      };
+    }
+    const minSlack = res.gapsFinal && res.gapsFinal.length ? Math.min(...res.gapsFinal.map((g) => -g.gap)) : 0;
+    if (minSlack < 15) {
+      return {
+        status: 'tight',
+        shortfallMinutes: 0,
+        title: 'Tight buffer (' + fmt(Math.max(0, minSlack)) + ' slack)',
+        desc: 'Plan fits, but less than 15m of buffer remains before at least one deadline. Any delay will cascade.',
+        minSlack,
+      };
+    }
+    return {
+      status: 'robust',
+      shortfallMinutes: 0,
+      title: 'Resilient buffer (' + fmt(minSlack) + ' slack)',
+      desc: 'Work fits with healthy breathing room before every deadline. Buffer protects against normal variance.',
+      minSlack,
+    };
+  }
+
+  function computeScenarios(st) {
+    const deltas = [-30, -15, 0, 15, 30];
+    return deltas.map((d) => {
+      const adj = d === 0 ? st : TaskInput.adjustCapacity(st, d);
+      const res = run(adj);
+      const deferred = res.tasks.filter((t) => t.decision === 'deferred').length;
+      const reduced = res.tasks.filter((t) => t.decision === 'reduced').length;
+      const kept = res.tasks.filter((t) => t.decision === 'full').length;
+      return {
+        delta: d,
+        shortfall: res.summary.shortfall,
+        status: res.status,
+        deferred,
+        reduced,
+        kept,
+      };
+    });
+  }
+
+  function validateImport(raw) {
+    if (!raw || typeof raw !== 'string') return { ok: false, error: 'Empty import data' };
+    let data;
+    try { data = JSON.parse(raw); } catch (e) { return { ok: false, error: 'Invalid JSON format' }; }
+    if (!data || data.app !== 'Triage' || data.version !== 1) return { ok: false, error: 'Unrecognized plan format (expected Triage v1 schema)' };
+    const av = TaskInput.validateAvailable(data.availablePerDay);
+    if (!av.ok) return { ok: false, error: av.error };
+    if (!Array.isArray(data.tasks)) return { ok: false, error: 'tasks must be a list' };
+    if (data.tasks.length === 0) return { ok: false, error: 'Import contains no tasks' };
+    if (data.tasks.length > TaskInput.LIMITS.MAX_TASKS) return { ok: false, error: 'Too many tasks (max ' + TaskInput.LIMITS.MAX_TASKS + ')' };
+    const tasks = [];
+    for (let i = 0; i < data.tasks.length; i++) {
+      const vt = TaskInput.validateTask(data.tasks[i]);
+      if (!vt.ok) return { ok: false, error: 'Task #' + (i + 1) + ': ' + Object.values(vt.errors).join(' ') };
+      tasks.push(Object.assign({ id: 'u' + (i + 1) }, vt.task));
+    }
+    return { ok: true, tasks, availablePerDay: av.value };
+  }
+
+  function exportPlanJson(draftList, available) {
+    const payload = {
+      app: 'Triage',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      availablePerDay: Number(available) || 120,
+      tasks: (draftList || []).map((t) => ({
+        name: t.name,
+        estimate: t.estimate,
+        importance: t.importance,
+        days: t.days !== undefined ? t.days : t.deadlineDay,
+      })),
+    };
+    return JSON.stringify(payload, null, 2);
+  }
+
+  function formatScheduleText(res, st) {
+    const sum = res.summary;
+    let out = 'TRIAGE STUDY PLAN\n=================\n';
+    out += 'Workload: ' + fmt(sum.workload) + ' needed | ' + fmt(sum.capacity) + ' available\n';
+    out += (sum.shortfall > 0 ? 'Status: Short by ' + fmt(sum.shortfall) + '\n' : 'Status: Feasible\n') + '\n';
+    out += 'TRIAGE DECISIONS:\n';
+    res.tasks.forEach((t) => {
+      out += '• ' + t.name + ' [' + t.decision.toUpperCase() + (t.protected ? ' PROTECTED' : '') + ']: ' +
+        (t.decision === 'reduced' ? fmt(t.remaining) + ' -> ' + fmt(t.allocated) : fmt(t.allocated)) + '\n';
+    });
+    out += '\nDAILY SCHEDULE:\n';
+    const lastD = res.days.length ? Math.max(...res.days.map((d) => d.day)) : 0;
+    for (let d = 0; d <= lastD; d++) {
+      const dBlocks = res.blocks.filter((b) => b.day === d);
+      if (!dBlocks.length) continue;
+      out += dayName(d) + ':\n';
+      let tm = d === 0 ? Math.max(st.now, 900) : 900;
+      dBlocks.forEach((b) => {
+        const e = tm + b.minutes;
+        const tObj = st.tasks.find((x) => x.id === b.taskId);
+        out += '  ' + hh(tm) + ' - ' + hh(e) + ' ' + (tObj ? tObj.name : b.taskId) + ' (' + b.minutes + 'm)\n';
+        tm = e;
+      });
+    }
+    return out;
+  }
+
+  return {
+    computeHorizon,
+    computeBufferDiagnosis,
+    computeScenarios,
+    validateImport,
+    exportPlanJson,
+    formatScheduleText,
+  };
+})();
+
 const run = TriageEngine.runTriageEngine;
 const T = (id, name, seq, day, est, imp, o = {}) => ({ id, name, seq, deadlineDay: day, deadlineTime: o.time, estimate: est, completed: 0, importance: imp, allOrNothing: !!o.aon });
 const demo = () => ({ now: 900, capacity: [120, 60, 60, 0, 60, 60, 60, 0, 60], tasks: [
-  T('math', 'Math homework', 1, 1, 45, 3, { aon: 1, time: 480 }), T('phys', 'Physics worksheet', 2, 2, 60, 2),
-  T('eng', 'English essay', 3, 3, 90, 3), T('quiz', 'Math quiz prep', 4, 4, 60, 4),
-  T('bio', 'Biology exam', 5, 5, 150, 5), T('chem', 'Chemistry lab', 6, 6, 45, 3), T('hist', 'History project', 7, 8, 150, 4)] });
+  T('practice', 'Practice problem set', 1, 1, 45, 3, { aon: 1, time: 480 }), T('review', 'Review worksheet', 2, 2, 60, 2),
+  T('assignment', 'Major assignment', 3, 3, 90, 3), T('presentation', 'Presentation prep', 4, 4, 60, 4),
+  T('assessment', 'Assessment preparation', 5, 5, 150, 5), T('reading', 'Reading assignment', 6, 6, 45, 3), T('project', 'Research project', 7, 8, 150, 4)] });
 
 let S = demo(), R = run(S), prev = null, lastDone = {};
 let mode = 'demo', draft = [], nextId = 1, planned = true, flash = false, headText = '';
@@ -1368,18 +1858,21 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 // ---- Reality check: the core insight. Bar = needed time; dark = covered by your time, red = missing. ----
 function renderStatus() {
   const s = R.summary; let cls, head, sub;
-  if (R.status === 'impossible') { cls = 'bad'; head = 'Still impossible'; sub = 'Even after cutting everything allowed, you are short by ' + fmt(R.stillImpossible.need) + '. Add time or ask for an extension.'; }
-  else if (s.shortfall > 0) { cls = 'bad'; head = 'Short by ' + fmt(s.shortfall); sub = 'Your workload is not realistic. Triage below removes exactly that much.'; }
-  else if (R.gapsFinal.some((g) => g.gap >= -14)) { cls = 'warn'; head = 'Realistic, but no slack'; sub = 'Any slip will break the plan.'; }
-  else { cls = 'ok'; head = 'Realistic'; sub = 'Everything fits with room to spare.'; }
+  const demoMode = mode === 'demo';
+  if (R.status === 'impossible') { cls = 'bad'; head = 'Still impossible'; sub = demoMode ? 'Even after cutting everything allowed in this sample, it is short by ' + fmt(R.stillImpossible.need) + '.' : 'Even after cutting everything allowed, you are short by ' + fmt(R.stillImpossible.need) + '. Add time or ask for an extension.'; }
+  else if (s.shortfall > 0) { cls = 'bad'; head = 'Short by ' + fmt(s.shortfall); sub = demoMode ? 'Sample workload is not realistic. Triage below removes exactly that much.' : 'Your workload is not realistic. Triage below removes exactly that much.'; }
+  else if (R.gapsFinal.some((g) => g.gap >= -14)) { cls = 'warn'; head = 'Realistic, but no slack'; sub = demoMode ? 'Sample plan fits, but has zero margin for error.' : 'Any slip will break the plan.'; }
+  else { cls = 'ok'; head = 'Realistic'; sub = demoMode ? 'All sample tasks fit within the available study capacity.' : 'Everything fits with room to spare.'; }
   if (R.status === 'atRisk') sub += ' Some time slots are too fragmented to use: see "At risk" below.';
   headText = head;
   const scale = Math.max(s.workload, s.capacity, 1), pc = (x) => Math.round((x / scale) * 1000) / 10;
   const covered = Math.min(s.workload, s.capacity), gap = Math.max(0, s.workload - s.capacity);
-  $('status').innerHTML = '<div class="status ' + cls + (flash ? ' fresh' : '') + '"><div class="eyebrow">Reality check' + (whatIf ? '<span class="tag wi">WHAT-IF</span>' : '<span class="status-note">BASELINE</span>') + '</div><div class="big">' + head + '</div><div class="lead">' + sub + '</div>' +
-    '<div class="bar-label"><span>Workload against available time</span><b>' + (gap ? fmt(gap) + ' missing' : 'Enough time') + '</b></div>' +
+  const eyebrow = demoMode ? 'Reality check · Example workload' + (whatIf ? '<span class="tag wi">WHAT-IF</span>' : '<span class="status-note">SAMPLE</span>') : 'Reality check' + (whatIf ? '<span class="tag wi">WHAT-IF</span>' : '<span class="status-note">BASELINE</span>');
+  const keyLabel = demoMode ? 'Covered by sample capacity' : 'Covered by your time';
+  $('status').innerHTML = '<div class="status ' + cls + (flash ? ' fresh' : '') + '"><div class="eyebrow">' + eyebrow + '</div><div class="big">' + head + '</div><div class="lead">' + sub + '</div>' +
+    '<div class="bar-label"><span>' + (demoMode ? 'Sample workload against study capacity' : 'Workload against available time') + '</span><b>' + (gap ? fmt(gap) + ' missing' : 'Enough time') + '</b></div>' +
     '<div class="bar"><span class="have" style="width:' + pc(covered) + '%"></span><span class="gap" style="width:' + pc(gap) + '%"></span></div>' +
-    '<div class="key"><span><span class="k have"></span>Covered by your time</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
+    '<div class="key"><span><span class="k have"></span>' + keyLabel + '</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
     '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div></div>';
 }
 
@@ -1403,8 +1896,9 @@ function renderTriage() {
 function planDay() { return R.blocks.length ? Math.min(...R.blocks.map((b) => b.day)) : null; }
 function renderBlocks() {
   const d = planDay();
+  const demoMode = mode === 'demo';
   if (d === null) { $('planTitle').textContent = 'Plan'; $('blocks').innerHTML = '<span class="mut">No blocks to schedule.</span>'; return; }
-  $('planTitle').textContent = dayName(d) + ': priority blocks';
+  $('planTitle').textContent = (demoMode ? 'Sample schedule · ' : '') + dayName(d) + ': priority blocks';
   let t = d === 0 ? Math.max(S.now, 900) : 900;
   const rows = R.blocks.filter((b) => b.day === d).map((b, i) => {
     const s = t; t += b.minutes;
@@ -1417,13 +1911,19 @@ function renderBlocks() {
 function renderBehind(open) {
   if (whatIf !== 0) { $('behind').innerHTML = '<div class="card mut">This is a what-if, not your real plan. Go back to real time to record what actually happened.</div>'; return; }
   const d = planDay();
-  if (d !== 0) { $('behind').innerHTML = '<div class="card mut">' + (prev && d !== null ? 'Plan rebuilt from what you actually did. Your next session is ' + dayName(d).toLowerCase() + '.' : 'Nothing is planned for today. Come back when a session is due.') + '</div>'; return; }
+  const demoMode = mode === 'demo';
+  if (d !== 0) { $('behind').innerHTML = '<div class="card mut">' + (prev && d !== null ? 'Plan rebuilt from what you actually did. Your next session is ' + dayName(d).toLowerCase() + '.' : (demoMode ? 'Nothing is scheduled for today in this sample. Come back when a session is due.' : 'Nothing is planned for today. Come back when a session is due.')) + '</div>'; return; }
   if (!open) {
-    $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">Recovery mode</div><div class="rec-t">Plans slip. That is expected.</div><div class="mut">Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty, no starting over.</div><button type="button" class="recover" id="fb">I FELL BEHIND</button></div>';
+    const kicker = demoMode ? 'Recovery mode · Example demonstration' : 'Recovery mode';
+    const desc = demoMode ? 'Plans slip. That is expected. Try the recovery flow on this sample plan: simulate what happens when study sessions slip, and watch Triage rebuild the plan.' : 'Plans slip. That is expected. Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty, no starting over.';
+    $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">' + kicker + '</div><div class="rec-t">Plans slip. That is expected.</div><div class="mut">' + desc + '</div><button type="button" class="recover" id="fb">I FELL BEHIND</button></div>';
     $('fb').onclick = () => renderBehind(true); return;
   }
+  const kicker = demoMode ? 'Recovery mode · Sample session' : 'Recovery mode · today';
+  const title = demoMode ? 'Simulate what happened today' : 'What actually happened today?';
+  const desc = demoMode ? 'Enter the minutes completed for each block in this example. Triage will protect essential work and rebuild what remains.' : 'Enter the minutes you really worked on each block. Triage will protect the important work and rebuild what remains.';
   const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
-  $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">Recovery mode · today</div><div class="rec-t">What actually happened today?</div><div class="mut">Enter the minutes you really worked on each block. Triage will protect the important work and rebuild what remains.</div>' + Object.keys(plannedMin).map((id) =>
+  $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">' + kicker + '</div><div class="rec-t">' + title + '</div><div class="mut">' + desc + '</div>' + Object.keys(plannedMin).map((id) =>
     '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
     '<button type="button" class="primary" id="rp">REPLAN</button></div>';
   $('rp').onclick = () => {
@@ -1451,32 +1951,361 @@ const count = (n) => n + (n === 1 ? ' task' : ' tasks');
 function renderTasks() {
   const demoMode = mode === 'demo';
   $('form').hidden = demoMode; $('useOwn').hidden = !demoMode;
-  $('demoNote').textContent = demoMode ? 'Demo data (not real). Try I FELL BEHIND below, or press "Use my own tasks".' : '';
+  $('demoNote').textContent = demoMode ? 'Sample workload active. This is demonstration data to show how Triage makes trade-offs. Try I FELL BEHIND below, or press "Use my own tasks".' : '';
   $('planBtn').disabled = !demoMode && draft.length === 0;
   $('planHint').textContent = !demoMode && draft.length === 0 ? 'Add at least one task to enable planning.' : '';
   const rows = demoMode ? S.tasks.map((t) => ({ id: t.id, name: t.name, estimate: t.estimate, importance: t.importance, days: t.deadlineDay, time: t.deadlineTime })) : draft;
+  if ($('taskHeadingLabel')) $('taskHeadingLabel').textContent = demoMode ? 'Sample tasks' : 'Your tasks';
+  if ($('navTasksLabel')) $('navTasksLabel').textContent = demoMode ? 'Sample Tasks' : 'Your Tasks';
   $('taskCount').textContent = demoMode ? rows.length + ' demo tasks' : rows.length ? count(rows.length) + ' ready' : '0 tasks';
   $('taskList').innerHTML = rows.length ? rows.map((r) => '<div class="trow"><span>' + esc(r.name) + ' <span class="mut">' + fmt(r.estimate) + ' \u00b7 importance ' + r.importance + ' \u00b7 due ' + dueLabel(r.days, r.time) + '</span></span>' +
-    (demoMode ? '' : '<button type="button" data-rm="' + esc(r.id) + '" aria-label="Remove task">Remove</button>') + '</div>').join('') : '<div class="empty"><b>0 tasks</b>Add your first task below.</div>';
+    (demoMode ? '' : '<span style="display:inline-flex;gap:6px"><button type="button" data-id="' + esc(r.id) + '" aria-label="Edit task">Edit</button><button type="button" data-rm="' + esc(r.id) + '" aria-label="Remove task">Remove</button></span>') + '</div>').join('') : '<div class="empty"><b>0 tasks</b>Add your first task below.</div>';
 }
-const wiText = () => (whatIf ? (whatIf > 0 ? '+' : '\u2212') + Math.abs(whatIf) + ' min per study day' : 'Your real time');
+const wiText = () => (whatIf ? (whatIf > 0 ? '+' : '\u2212') + Math.abs(whatIf) + ' min per study day' : (mode === 'demo' ? 'Sample baseline capacity' : 'Your real time'));
 function renderWhatIf() {
-  $('wiLabel').textContent = wiText(); $('wiBack').hidden = whatIf === 0;
+  $('wiLabel').textContent = wiText();
+  $('wiBack').hidden = whatIf === 0;
+  $('wiBack').textContent = mode === 'demo' ? 'Back to sample baseline' : 'Back to real time';
   $('whatif').className = 'card wi' + (whatIf !== 0 ? ' is-sim' : '');
   $('wiMinus').disabled = whatIf <= -LIMIT; $('wiPlus').disabled = whatIf >= LIMIT;
+  if ($('wiDesc')) {
+    $('wiDesc').textContent = mode === 'demo'
+      ? 'Simulate how adjusting daily study capacity reshapes Protect, Reduce, and Defer decisions without altering the baseline sample plan.'
+      : 'Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.';
+  }
 }
 function setWhatIf(v) {
   whatIf = Math.max(-LIMIT, Math.min(LIMIT, v)); recompute(); render();
-  $('announce').textContent = (whatIf ? 'What if ' + wiText() + '. ' : 'Back to real time. ') + headText + '.';
+  $('announce').textContent = (whatIf ? 'What if ' + wiText() + '. ' : (mode === 'demo' ? 'Back to sample baseline. ' : 'Back to real time. ')) + headText + '.';
 }
 $('wiMinus').onclick = () => setWhatIf(whatIf - STEP); $('wiPlus').onclick = () => setWhatIf(whatIf + STEP); $('wiBack').onclick = () => setWhatIf(0);
+
+// ---- Modern Product Views: Today, Horizon, Scenarios, Data ----
+function renderTodayCard() {
+  const el = $('todayCard');
+  if (!el) return;
+  const demoMode = mode === 'demo';
+  const d0Blocks = R.blocks.filter((b) => b.day === 0);
+  if (d0Blocks.length === 0) {
+    el.innerHTML = '<div class="today-panel"><div class="today-head"><span class="today-title">' + (demoMode ? 'Today\'s Focus · Example Session' : 'Today\'s Focus') + '</span><span class="tag">Ahead / Resting</span></div><p class="mut" style="margin:0">' + (demoMode ? 'No study blocks are scheduled for today in this sample workload. Next planned session starts tomorrow.' : 'No study blocks are scheduled for today. You are either caught up or your next planned session starts tomorrow.') + '</p></div>';
+    return;
+  }
+  const firstBlock = d0Blocks[0];
+  const tObj = S.tasks.find((t) => t.id === firstBlock.taskId);
+  const tName = tObj ? tObj.name : firstBlock.taskId;
+  const startTm = Math.max(S.now, 900);
+  const endTm = startTm + firstBlock.minutes;
+  const day0Info = R.days.find((d) => d.day === 0) || { avail: 120, used: 120, flex: 0 };
+  const pct = Math.min(100, Math.round((day0Info.used / Math.max(1, day0Info.avail)) * 100));
+
+  el.innerHTML = '<div class="today-panel focus-active">' +
+    '<div class="today-head"><span class="today-title">' + (demoMode ? 'Today\'s Focus · Example Session' : 'Today\'s Focus · Next Action') + '</span><span class="tag go">Start here</span></div>' +
+    '<div class="today-lead-block">' +
+      '<div>' +
+        '<div class="today-lead-name">' + esc(tName) + '</div>' +
+        '<div class="today-lead-meta">' + hh(startTm) + ' – ' + hh(endTm) + ' · ' + firstBlock.minutes + ' min session' + (tObj && tObj.protected ? ' · Protected' : '') + '</div>' +
+      '</div>' +
+      '<button type="button" class="btn-sm" id="btnFocusDone" aria-label="' + (demoMode ? 'Simulate progress on this block' : 'Record progress on this block') + '">' + (demoMode ? 'Simulate progress' : 'Record progress') + '</button>' +
+    '</div>' +
+    '<div class="today-meter">' +
+      '<span>' + (demoMode ? 'Sample daily capacity' : 'Today\'s capacity') + ': <b>' + day0Info.used + 'm / ' + day0Info.avail + 'm</b> (' + pct + '%)</span>' +
+      '<div class="today-meter-bar"><div class="today-meter-fill" style="width:' + pct + '%"></div></div>' +
+      '<span class="mut">' + (day0Info.flex > 0 ? fmt(day0Info.flex) + ' buffer' : '0m slack') + '</span>' +
+    '</div>' +
+  '</div>';
+
+  const btn = $('btnFocusDone');
+  if (btn) {
+    btn.onclick = () => {
+      const top = $('behind');
+      if (top && top.scrollIntoView) top.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      renderBehind(true);
+    };
+  }
+}
+
+function renderHorizonCard() {
+  const el = $('horizonCard');
+  if (!el) return;
+  const demoMode = mode === 'demo';
+  const diag = TriageSystem.computeBufferDiagnosis(R);
+  const horizon = TriageSystem.computeHorizon(R, S);
+
+  let bannerCls = diag.status === 'robust' ? 'robust' : diag.status === 'tight' ? 'tight' : 'shortfall';
+  let bannerHtml = '<div class="buffer-banner ' + bannerCls + '"><div><b>' + esc(diag.title) + ':</b> ' + esc(diag.desc) + '</div></div>';
+
+  let daysHtml = horizon.map((h) => {
+    const pct = h.avail > 0 ? Math.min(100, Math.round((h.used / h.avail) * 100)) : 0;
+    const tagCls = h.status === 'rest' ? 'rest' : h.status === 'full' ? 'full' : 'flex';
+    const tagText = h.status === 'rest' ? 'Day off' : h.flex > 0 ? '+' + h.flex + 'm flex' : 'Full (0m)';
+    return '<div class="hday-card">' +
+      '<span class="hday-name">' + esc(dayName(h.day)) + '</span>' +
+      '<span class="hday-stat">' + (h.avail > 0 ? fmt(h.used) : '0m') + '<span class="mut" style="font-size:11px;font-family:var(--sans);font-weight:400"> / ' + fmt(h.avail) + '</span></span>' +
+      '<div class="hday-bar"><div class="hday-fill" style="width:' + pct + '%"></div></div>' +
+      '<span class="hday-tag ' + tagCls + '">' + tagText + '</span>' +
+    '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="horizon-panel">' +
+    '<h2>' + (demoMode ? 'Planning Horizon · Example Schedule' : 'Planning Horizon · Day-by-Day Slack') + '</h2>' +
+    bannerHtml +
+    '<div class="horizon-days">' + daysHtml + '</div>' +
+  '</div>';
+}
+
+function renderScenarioMatrix() {
+  const el = $('scenarioMatrix');
+  if (!el) return;
+  const scenarios = TriageSystem.computeScenarios(S);
+  const demoMode = mode === 'demo';
+  el.innerHTML = scenarios.map((sc) => {
+    const isActive = whatIf === sc.delta;
+    const label = sc.delta === 0 ? (demoMode ? 'Sample Baseline' : 'Your Baseline') : (sc.delta > 0 ? '+' : '') + sc.delta + 'm/day';
+    const statusText = sc.shortfall === 0 ? 'Feasible · 0 shortfall' : 'Short by ' + fmt(sc.shortfall);
+    const sub = sc.deferred > 0 ? sc.deferred + ' deferred' : (sc.reduced > 0 ? sc.reduced + ' reduced' : 'All kept in full');
+    return '<button type="button" class="scenario-card' + (isActive ? ' active' : '') + '" data-delta="' + sc.delta + '" aria-label="Simulate ' + label + '">' +
+      '<div class="scenario-delta">' + label + '</div>' +
+      '<div class="scenario-result"><b>' + statusText + '</b><br>' + sub + '</div>' +
+    '</button>';
+  }).join('');
+
+  if (el.querySelectorAll) {
+    el.querySelectorAll('button[data-delta]').forEach((b) => {
+      b.onclick = () => {
+        const d = Number(b.dataset.delta);
+        if (!isNaN(d)) setWhatIf(d);
+      };
+    });
+  }
+}
+
+function renderDataPanel() {
+  const el = $('dataPanel');
+  if (!el) return;
+  const demoMode = mode === 'demo';
+  el.innerHTML = '<div class="data-panel">' +
+    '<h2>' + (demoMode ? 'Plan Data &amp; Backup' : 'Your Plan Data &amp; Backup') + '</h2>' +
+    '<p class="mut" style="margin:0 0 var(--s3);font-size:13.5px;line-height:1.5">Triage runs entirely in your browser. No accounts, no cloud sync, and no tracking. Export your plan anytime as JSON or copy a clean text schedule.</p>' +
+    '<div class="data-actions">' +
+      '<button type="button" class="btn-sm" id="btnExportJson">' + (demoMode ? 'Export Sample Plan (JSON)' : 'Export Plan (JSON)') + '</button>' +
+      '<button type="button" class="btn-sm" id="btnImportJson">Import Plan (JSON)</button>' +
+      '<button type="button" class="btn-sm" id="btnCopySchedule">' + (demoMode ? 'Copy Sample Schedule (Text)' : 'Copy Schedule (Text)') + '</button>' +
+      '<button type="button" class="btn-sm" id="btnClearSaved">Clear Saved Plan</button>' +
+    '</div>' +
+    '<div class="storage-status"><span class="storage-dot"></span><span>Local-First · ' + (demoMode ? 'Showing built-in sample' : 'Auto-saved in browser') + '</span></div>' +
+  '</div>';
+
+  if ($('btnExportJson')) $('btnExportJson').onclick = showExportModal;
+  if ($('btnImportJson')) $('btnImportJson').onclick = showImportModal;
+  if ($('btnCopySchedule')) $('btnCopySchedule').onclick = copyScheduleToClipboard;
+  if ($('btnClearSaved')) $('btnClearSaved').onclick = clearSavedStorage;
+}
+
+const STORAGE_KEY = 'triage_study_planner_state_v1';
+function saveToStorage() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    if (mode === 'user' && (draft.length > 0 || planned)) {
+      const payload = {
+        mode,
+        draft,
+        available: $('tAvail') ? $('tAvail').value : '120',
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+  } catch (e) {}
+}
+
+function loadFromStorage() {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data && Array.isArray(data.draft) && data.draft.length > 0) {
+      mode = 'user';
+      draft = data.draft;
+      nextId = Math.max(1, ...draft.map((t) => Number(String(t.id).replace(/\D/g, '')) || 0)) + 1;
+      if ($('tAvail') && data.available) $('tAvail').value = String(data.available);
+      invalidate();
+      const a = TaskInput.validateAvailable($('tAvail') ? $('tAvail').value : '120');
+      if (a.ok) {
+        S = TaskInput.buildState(draft, a.value);
+        planned = true;
+        recompute();
+      }
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function clearSavedStorage() {
+  if (typeof localStorage !== 'undefined') {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+  $('reset').onclick();
+}
+
+function showExportModal() {
+  const container = $('modalContainer');
+  if (!container) return;
+  const demoMode = mode === 'demo';
+  const json = TriageSystem.exportPlanJson(mode === 'user' ? draft : S.tasks, $('tAvail') ? $('tAvail').value : 120);
+  container.hidden = false;
+  container.innerHTML = '<div class="modal-overlay">' +
+    '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalExpTitle">' +
+      '<div class="modal-header"><h3 id="modalExpTitle" class="modal-title">' + (demoMode ? 'Export Sample Plan' : 'Export Study Plan') + '</h3><button type="button" class="btn-sm" id="btnCloseModal">Close</button></div>' +
+      '<p class="mut" style="font-size:13px;margin:0 0 10px">' + (demoMode ? 'Copy this sample plan JSON or download the file.' : 'Copy this JSON or download the file to backup or transfer your study plan.') + '</p>' +
+      '<textarea class="modal-textarea" readonly id="expText">' + esc(json) + '</textarea>' +
+      '<div style="display:flex;gap:8px;margin-top:12px">' +
+        '<button type="button" class="btn-sm" id="btnDownloadJson">Download .json</button>' +
+        '<button type="button" class="btn-sm" id="btnCopyJson">Copy to Clipboard</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  if ($('btnCloseModal')) $('btnCloseModal').onclick = () => { container.hidden = true; };
+  if ($('btnCopyJson')) {
+    $('btnCopyJson').onclick = () => {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(json);
+        $('btnCopyJson').textContent = 'Copied!';
+        setTimeout(() => { if ($('btnCopyJson')) $('btnCopyJson').textContent = 'Copy to Clipboard'; }, 2000);
+      }
+    };
+  }
+  if ($('btnDownloadJson')) {
+    $('btnDownloadJson').onclick = () => {
+      if (typeof document !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'triage-study-plan.json';
+        a.click();
+      }
+    };
+  }
+}
+
+function showImportModal() {
+  const container = $('modalContainer');
+  if (!container) return;
+  container.hidden = false;
+  container.innerHTML = '<div class="modal-overlay">' +
+    '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalImpTitle">' +
+      '<div class="modal-header"><h3 id="modalImpTitle" class="modal-title">Import Study Plan</h3><button type="button" class="btn-sm" id="btnCloseModal">Close</button></div>' +
+      '<p class="mut" style="font-size:13px;margin:0 0 10px">Paste a Triage study plan JSON below:</p>' +
+      '<textarea class="modal-textarea" id="impText" placeholder="Paste plan JSON here..."></textarea>' +
+      '<div class="err" id="impErr" style="margin-top:8px"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:12px">' +
+        '<button type="button" class="btn-sm primary" id="btnDoImport">Load Plan</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  if ($('btnCloseModal')) $('btnCloseModal').onclick = () => { container.hidden = true; };
+  if ($('btnDoImport')) {
+    $('btnDoImport').onclick = () => {
+      const raw = $('impText') ? $('impText').value : '';
+      const res = TriageSystem.validateImport(raw);
+      if (!res.ok) {
+        if ($('impErr')) $('impErr').textContent = res.error;
+        return;
+      }
+      mode = 'user';
+      draft = res.tasks;
+      nextId = draft.length + 1;
+      if ($('tAvail')) $('tAvail').value = String(res.availablePerDay);
+      container.hidden = true;
+      invalidate();
+      S = TaskInput.buildState(draft, res.availablePerDay);
+      whatIf = 0;
+      recompute();
+      prev = null;
+      lastDone = {};
+      planned = true;
+      flash = true;
+      render();
+      setMsg('Successfully imported ' + count(draft.length) + '.');
+    };
+  }
+}
+
+function copyScheduleToClipboard() {
+  const scheduleText = TriageSystem.formatScheduleText(R, S);
+  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    navigator.clipboard.writeText(scheduleText);
+    if ($('btnCopySchedule')) {
+      $('btnCopySchedule').textContent = 'Schedule Copied!';
+      setTimeout(() => { if ($('btnCopySchedule')) $('btnCopySchedule').textContent = mode === 'demo' ? 'Copy Sample Schedule (Text)' : 'Copy Schedule (Text)'; }, 2000);
+    }
+  }
+}
+
+function renderModeBanner() {
+  const el = $('modeBanner');
+  if (!el) return;
+  const demoMode = mode === 'demo';
+  if (demoMode) {
+    el.innerHTML = '<div class="mode-banner">' +
+      '<div class="mode-banner-content">' +
+        '<span class="mode-tag demo">SAMPLE WORKLOAD</span>' +
+        '<span class="mode-text">Exploring demonstration plan &middot; 10h workload against 8h capacity</span>' +
+      '</div>' +
+      '<button type="button" class="btn-mode-switch" id="btnBannerUseOwn">Enter your own workload &rarr;</button>' +
+    '</div>';
+    const btn = $('btnBannerUseOwn');
+    if (btn) btn.onclick = () => {
+      $('useOwn').onclick();
+      const target = $('tasks');
+      if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth' });
+    };
+  } else {
+    el.innerHTML = '<div class="mode-banner">' +
+      '<div class="mode-banner-content">' +
+        '<span class="mode-tag user">YOUR WORKLOAD</span>' +
+        '<span class="mode-text">Personal study plan &middot; ' + (draft.length ? count(draft.length) + ' in queue' : 'Drafting tasks') + '</span>' +
+      '</div>' +
+      '<button type="button" class="btn-mode-switch" id="btnBannerViewDemo">View sample demo &rarr;</button>' +
+    '</div>';
+    const btn = $('btnBannerViewDemo');
+    if (btn) btn.onclick = () => {
+      $('reset').onclick();
+      const target = $('status');
+      if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth' });
+    };
+  }
+}
+
 function render() {
   const show = mode === 'demo' || planned;
   $('whatif').hidden = !show; renderWhatIf();
   $('empty').hidden = show; $('status').hidden = !show; $('rest').hidden = !show;
+  renderModeBanner();
   renderTasks();
-  if (show) { renderStatus(); renderTriage(); renderBlocks(); renderBehind(false); renderChanges(); }
+  if ($('heroCta')) {
+    $('heroCta').innerHTML = mode === 'demo' ? 'Start with your own tasks <span aria-hidden="true">&darr;</span>' : 'View your tasks <span aria-hidden="true">&darr;</span>';
+  }
+  if (show) {
+    renderStatus();
+    renderTriage();
+    renderBlocks();
+    renderBehind(false);
+    renderChanges();
+    renderTodayCard();
+    renderHorizonCard();
+    renderScenarioMatrix();
+    renderDataPanel();
+  } else {
+    if ($('todayCard')) $('todayCard').innerHTML = '';
+    if ($('horizonCard')) $('horizonCard').innerHTML = '';
+    if ($('scenarioMatrix')) $('scenarioMatrix').innerHTML = '';
+    if ($('dataPanel')) $('dataPanel').innerHTML = '';
+  }
   flash = false;
+  saveToStorage();
 }
 const invalidate = () => { planned = false; prev = null; lastDone = {}; if (whatIf) { whatIf = 0; recompute(); } };   // never keep a result computed from what-if time   // editing tasks => plan is rebuilt from scratch (no leftover progress)
 
@@ -1488,12 +2317,28 @@ function markInvalid(ids) { clearInvalid(); ids.forEach((id) => $(id).setAttribu
 
 $('useOwn').onclick = () => { mode = 'user'; draft = []; nextId = 1; invalidate(); clearInvalid(); $('formErr').textContent = ''; $('availErr').textContent = ''; setMsg(''); render(); $('tName').focus(); };
 $('taskList').onclick = (e) => {
-  const id = e && e.target && e.target.dataset && e.target.dataset.rm;
-  if (!id || mode !== 'user') return;
-  const gone = draft.find((t) => t.id === id); if (!gone) return;
-  const hadPlan = planned;
-  draft = draft.filter((t) => t.id !== id); invalidate(); render();
-  setMsg('Removed "' + gone.name + '". ' + count(draft.length) + ' left.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ''));
+  const t = e && e.target;
+  if (!t || mode !== 'user') return;
+  const rmId = t.dataset && t.dataset.rm;
+  if (rmId) {
+    const gone = draft.find((x) => x.id === rmId); if (!gone) return;
+    const hadPlan = planned;
+    draft = draft.filter((x) => x.id !== rmId); invalidate(); render();
+    setMsg('Removed "' + gone.name + '". ' + count(draft.length) + ' left.' + (hadPlan ? ' The old plan was cleared: press PLAN MY TIME to rebuild it.' : ''));
+    return;
+  }
+  const editId = t.dataset && t.dataset.id;
+  if (editId) {
+    const item = draft.find((x) => x.id === editId); if (!item) return;
+    draft = draft.filter((x) => x.id !== editId);
+    $('tName').value = item.name;
+    $('tEst').value = String(item.estimate);
+    $('tImp').value = String(item.importance);
+    $('tDays').value = String(item.days);
+    invalidate(); render();
+    setMsg('Editing "' + item.name + '". Adjust fields and press Add Task.');
+    $('tName').focus();
+  }
 };
 $('addBtn').onclick = () => {
   if (mode !== 'user') return;
@@ -1531,10 +2376,15 @@ const setPreset = (name, est, imp, days) => {
   $('tName').value = name; $('tEst').value = est; $('tImp').value = String(imp); $('tDays').value = days;
   clearInvalid(); $('formErr').textContent = ''; $('tName').focus();
 };
-if ($('preExam')) $('preExam').onclick = () => setPreset('Biology Exam', '90', 5, '1');
-if ($('preEssay')) $('preEssay').onclick = () => setPreset('History Essay', '120', 3, '2');
-if ($('preQuiz')) $('preQuiz').onclick = () => setPreset('Math Problem Set', '45', 2, '1');
+if ($('preExam')) $('preExam').onclick = () => setPreset('Assessment Preparation', '90', 5, '1');
+if ($('preEssay')) $('preEssay').onclick = () => setPreset('Research Project', '120', 3, '2');
+if ($('preQuiz')) $('preQuiz').onclick = () => setPreset('Practice Problem Set', '45', 2, '1');
+if ($('preProject')) $('preProject').onclick = () => setPreset('Major Assignment', '120', 4, '3');
+if ($('preReview')) $('preReview').onclick = () => setPreset('Review Worksheet', '60', 5, '1');
+if ($('preReading')) $('preReading').onclick = () => setPreset('Reading Assignment', '45', 1, '1');
 $('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); whatIf = 0; recompute(); prev = null; lastDone = {}; clearInvalid(); setMsg(''); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
+
+loadFromStorage();
 render();
 </script>
 </body>

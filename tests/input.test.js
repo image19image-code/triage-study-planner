@@ -41,9 +41,9 @@ const test = (n, f) => { try { f(); pass++; } catch (e) { fail++; console.log('F
 const userScenario = () => boot().start().add('Essay', '120', 3, '1').add('Exam', '90', 5, '1').add('Reading', '60', 1, '1').plan(100);
 
 test('IN-01 valid task is added and shown', () => {
-  const a = boot().start().add('Chemistry report', '60', 3, '2');
+  const a = boot().start().add('Research report', '60', 3, '2');
   assert.strictEqual(a.els.formErr.textContent, ''); assert.strictEqual(a.ctx.__D().length, 1);
-  assert.ok(txt(a.els.taskList.innerHTML).includes('Chemistry report 1h · importance 3 · due day 2'));
+  assert.ok(txt(a.els.taskList.innerHTML).includes('Research report 1h · importance 3 · due day 2'));
   assert.strictEqual(a.els.tName.value, '');
 });
 test('IN-02 two tasks', () => { const a = boot().start().add('A', '30', 3, '0').add('B', '45', 4, '1'); assert.strictEqual(JSON.stringify(a.ctx.__D().map((t) => t.name)), '["A","B"]'); });
@@ -147,13 +147,13 @@ test('IN-16 XSS: hostile task names never become tags or attributes (allowlist c
 test('IN-17 Demo mode preserved: same numbers and decisions as before', () => {
   const a = boot(); const s = txt(a.els.status.innerHTML); assert.ok(s.includes('Short by 2h') && s.includes('10h needed') && s.includes('8h available'));
   const t = txt(a.els.triage.innerHTML);
-  ['Math homework FULL 45m', 'Math quiz prep FULL 1h', 'Biology exam PROTECTED 2h 30m', 'History project FULL 2h 30m', 'English essay 1h 30m → 45m', 'Chemistry lab 45m → 30m', 'Physics worksheet DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
-  assert.ok(txt(a.els.taskList.innerHTML).includes('Math homework 45m · importance 3 · due tomorrow 08:00'));
+  ['Practice problem set FULL 45m', 'Presentation prep FULL 1h', 'Assessment preparation PROTECTED 2h 30m', 'Research project FULL 2h 30m', 'Major assignment 1h 30m → 45m', 'Reading assignment 45m → 30m', 'Review worksheet DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
+  assert.ok(txt(a.els.taskList.innerHTML).includes('Practice problem set 45m · importance 3 · due tomorrow 08:00'));
 });
 test('IN-18 user mode -> Reset demo restores the exact demo; BUG-1 fix still holds in demo', () => {
   const a = boot(); const first = JSON.stringify(a.ctx.__R()); a.start().add('A', '30', 3, '1').plan(60); a.els.reset.onclick();
   assert.strictEqual(JSON.stringify(a.ctx.__R()), first); assert.strictEqual(a.els.rest.hidden, false);
-  a.fell({ math: '45', eng: '45', quiz: '30' }); assert.ok(txt(a.els.changes.innerHTML).includes('No change needed'));
+  a.fell({ practice: '45', assignment: '45', presentation: '30' }); assert.ok(txt(a.els.changes.innerHTML).includes('No change needed'));
 });
 test('IN-19 editing tasks after a plan rebuilds from scratch (no leftover progress, no double counting)', () => {
   const a = userScenario(); a.fell({ u2: '45' }); assert.ok(a.ctx.__S().tasks.some((t) => t.completed > 0));
