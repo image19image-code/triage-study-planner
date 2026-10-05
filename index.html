@@ -1307,7 +1307,7 @@ button.primary {
     <div id="form" hidden>
       <div class="entry">
         <div class="frm">
-          <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Chemistry lab report" aria-describedby="formErr"></div>
+          <div class="wide"><label for="tName">Task name</label><input id="tName" type="text" maxlength="60" autocomplete="off" placeholder="e.g. Research assignment" aria-describedby="formErr"></div>
           <div><label for="tEst">Time needed (min)</label><input id="tEst" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 60" aria-describedby="formErr"></div>
           <div><label for="tImp">Importance</label><select id="tImp"><option value="1">1 low</option><option value="2">2</option><option value="3" selected>3 normal</option><option value="4">4</option><option value="5">5 never cut</option></select></div>
           <div><label for="tDays">Due in (days)</label><input id="tDays" type="text" inputmode="numeric" autocomplete="off" placeholder="0 = today, 1 = tomorrow" aria-describedby="formErr"></div>
@@ -1318,9 +1318,9 @@ button.primary {
         </div>
         <div class="presets-bar" style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:8px">
           <span class="mut" style="font-size:12px;font-weight:600">Quick presets:</span>
-          <button type="button" class="preset-chip" id="preExam">+ Biology Exam (90m, Imp 5)</button>
-          <button type="button" class="preset-chip" id="preEssay">+ History Essay (120m, Imp 3)</button>
-          <button type="button" class="preset-chip" id="preQuiz">+ Math Problem Set (45m, Imp 2)</button>
+          <button type="button" class="preset-chip" id="preExam">+ Assessment Prep (90m, Imp 5)</button>
+          <button type="button" class="preset-chip" id="preEssay">+ Research Assignment (120m, Imp 3)</button>
+          <button type="button" class="preset-chip" id="preQuiz">+ Practice Work (45m, Imp 2)</button>
         </div>
         <div class="err" id="formErr" role="alert"></div>
         <div class="ok" id="formMsg" role="status"></div>
@@ -1348,9 +1348,9 @@ button.primary {
 const run = TriageEngine.runTriageEngine;
 const T = (id, name, seq, day, est, imp, o = {}) => ({ id, name, seq, deadlineDay: day, deadlineTime: o.time, estimate: est, completed: 0, importance: imp, allOrNothing: !!o.aon });
 const demo = () => ({ now: 900, capacity: [120, 60, 60, 0, 60, 60, 60, 0, 60], tasks: [
-  T('math', 'Math homework', 1, 1, 45, 3, { aon: 1, time: 480 }), T('phys', 'Physics worksheet', 2, 2, 60, 2),
-  T('eng', 'English essay', 3, 3, 90, 3), T('quiz', 'Math quiz prep', 4, 4, 60, 4),
-  T('bio', 'Biology exam', 5, 5, 150, 5), T('chem', 'Chemistry lab', 6, 6, 45, 3), T('hist', 'History project', 7, 8, 150, 4)] });
+  T('math', 'Required assignment', 1, 1, 45, 3, { aon: 1, time: 480 }), T('phys', 'Practice work', 2, 2, 60, 2),
+  T('eng', 'Review material', 3, 3, 90, 3), T('quiz', 'Assessment preparation', 4, 4, 60, 4),
+  T('bio', 'Research assignment', 5, 5, 150, 5), T('chem', 'Presentation preparation', 6, 6, 45, 3), T('hist', 'Project work', 7, 8, 150, 4)] });
 
 let S = demo(), R = run(S), prev = null, lastDone = {};
 let mode = 'demo', draft = [], nextId = 1, planned = true, flash = false, headText = '';
@@ -1451,7 +1451,7 @@ const count = (n) => n + (n === 1 ? ' task' : ' tasks');
 function renderTasks() {
   const demoMode = mode === 'demo';
   $('form').hidden = demoMode; $('useOwn').hidden = !demoMode;
-  $('demoNote').textContent = demoMode ? 'Demo data (not real). Try I FELL BEHIND below, or press "Use my own tasks".' : '';
+  $('demoNote').textContent = demoMode ? 'Demo tasks only. Try I FELL BEHIND to see how Triage rebuilds the plan, or use your own tasks.' : '';
   $('planBtn').disabled = !demoMode && draft.length === 0;
   $('planHint').textContent = !demoMode && draft.length === 0 ? 'Add at least one task to enable planning.' : '';
   const rows = demoMode ? S.tasks.map((t) => ({ id: t.id, name: t.name, estimate: t.estimate, importance: t.importance, days: t.deadlineDay, time: t.deadlineTime })) : draft;
@@ -1531,9 +1531,9 @@ const setPreset = (name, est, imp, days) => {
   $('tName').value = name; $('tEst').value = est; $('tImp').value = String(imp); $('tDays').value = days;
   clearInvalid(); $('formErr').textContent = ''; $('tName').focus();
 };
-if ($('preExam')) $('preExam').onclick = () => setPreset('Biology Exam', '90', 5, '1');
-if ($('preEssay')) $('preEssay').onclick = () => setPreset('History Essay', '120', 3, '2');
-if ($('preQuiz')) $('preQuiz').onclick = () => setPreset('Math Problem Set', '45', 2, '1');
+if ($('preExam')) $('preExam').onclick = () => setPreset('Assessment preparation', '90', 5, '1');
+if ($('preEssay')) $('preEssay').onclick = () => setPreset('Research assignment', '120', 3, '2');
+if ($('preQuiz')) $('preQuiz').onclick = () => setPreset('Practice work', '45', 2, '1');
 $('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); whatIf = 0; recompute(); prev = null; lastDone = {}; clearInvalid(); setMsg(''); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
 render();
 </script>

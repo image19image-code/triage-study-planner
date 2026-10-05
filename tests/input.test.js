@@ -147,8 +147,8 @@ test('IN-16 XSS: hostile task names never become tags or attributes (allowlist c
 test('IN-17 Demo mode preserved: same numbers and decisions as before', () => {
   const a = boot(); const s = txt(a.els.status.innerHTML); assert.ok(s.includes('Short by 2h') && s.includes('10h needed') && s.includes('8h available'));
   const t = txt(a.els.triage.innerHTML);
-  ['Math homework FULL 45m', 'Math quiz prep FULL 1h', 'Biology exam PROTECTED 2h 30m', 'History project FULL 2h 30m', 'English essay 1h 30m → 45m', 'Chemistry lab 45m → 30m', 'Physics worksheet DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
-  assert.ok(txt(a.els.taskList.innerHTML).includes('Math homework 45m · importance 3 · due tomorrow 08:00'));
+  ['Required assignment FULL 45m', 'Assessment preparation FULL 1h', 'Research assignment PROTECTED 2h 30m', 'Project work FULL 2h 30m', 'Review material 1h 30m → 45m', 'Presentation preparation 45m → 30m', 'Practice work DEFERRED 1h'].forEach((x) => assert.ok(t.includes(x), x));
+  assert.ok(txt(a.els.taskList.innerHTML).includes('Required assignment 45m · importance 3 · due tomorrow 08:00'));
 });
 test('IN-18 user mode -> Reset demo restores the exact demo; BUG-1 fix still holds in demo', () => {
   const a = boot(); const first = JSON.stringify(a.ctx.__R()); a.start().add('A', '30', 3, '1').plan(60); a.els.reset.onclick();
