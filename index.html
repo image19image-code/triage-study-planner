@@ -1163,6 +1163,83 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .grp { align-items: flex-start; flex-wrap: wrap; }
   .grp .hint { flex-basis: 100%; margin-left: 12px; }
 }
+
+/* Final polish pass: one calm visual language from input to replan. */
+.top-bar {
+  margin-bottom: var(--s5);
+}
+.brand-pill {
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--surface) 82%, var(--tint));
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero {
+  padding-bottom: var(--s5);
+  margin-bottom: var(--s6);
+}
+.hero-mark { color: var(--focus); }
+.lead0 { max-width: 36em; }
+.hero-actions { margin: var(--s5) 0 var(--s4); }
+.hero-cta { border-radius: 10px; }
+.truth-contrast { margin-top: var(--s5); }
+.pillars { margin-top: var(--s4); }
+.pillar-card { min-height: 142px; }
+.legend { padding-top: var(--s3); }
+h2 { margin-top: var(--s7); }
+.card { border-radius: var(--r2); }
+#tasks.card { padding: var(--s4); }
+.entry { background: var(--surface-raised); }
+input[type=text], input[type=number], select {
+  background: var(--surface);
+  border-color: var(--line);
+}
+input[type=text]:hover, input[type=number]:hover, select:hover {
+  border-color: var(--ink3);
+}
+button.primary {
+  margin-top: var(--s3);
+  min-height: 48px;
+  border-radius: 10px;
+}
+#useOwn { margin-top: var(--s4) !important; }
+.status { margin-top: var(--s6); }
+.status .lead { max-width: 34em; }
+.nums > div { min-height: 78px; }
+.dc { border-radius: 10px; }
+.dc .dn { letter-spacing: -0.01em; }
+.tag { line-height: 1.2; }
+.rec { border-radius: var(--r2); }
+.rec .fr strong { font-variant-numeric: tabular-nums; }
+.wi { border-radius: var(--r2); }
+.wi .back { border-width: 1px; }
+.trow button { background: transparent; }
+
+@media (max-width: 620px) {
+  main { padding-bottom: 72px; }
+  .top-bar { margin-bottom: var(--s4); }
+  .brand-pill { max-width: 100%; }
+  .hero { padding-bottom: var(--s4); margin-bottom: var(--s5); }
+  .truth-contrast { margin-top: var(--s4); }
+  .pillar-card { min-height: 0; padding: var(--s3) var(--s4); }
+  h2 { margin-top: var(--s6); }
+  .status { margin-top: var(--s5); }
+  .status .big { max-width: 12ch; }
+  .nums > div { min-height: 0; padding: 12px; }
+  .dc .tag { margin-top: 2px; }
+  .rec .fr { align-items: flex-start; flex-direction: column; gap: var(--s1); }
+}
+@media (max-width: 420px) {
+  .brand-pill { font-size: 10px; }
+  .hero-actions .mut { line-height: 1.35; }
+  #tasks.card { padding: var(--s3); }
+  .entry { padding: var(--s3); }
+  .preset-chip { max-width: 100%; white-space: normal; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 </style>
 </head>
 <body>
