@@ -74,9 +74,29 @@ Task names and imported data are untrusted text. Every value that reaches the pa
 
 Labelled fields, keyboard entry (Enter adds a task), visible focus, errors that move focus to the first wrong field, modal focus trapping with Escape key dismissal and focus restoration, screen-reader announcements for plan results, `prefers-reduced-motion` support, and colour pairs that meet 4.5:1 contrast in light and dark themes (computed, not eyeballed). Meaning never relies on colour alone: every decision also has a text label.
 
+## Competition Context (EurekaDEV 2026)
+
+- **Track:** Coding Track (Computer Science + AI)
+- **Problem Statement:** Students routinely fall into the "wishful scheduling" trap—traditional planners accept 14 hours of tasks into an 8-hour day, causing late-night panic and missed deadlines.
+- **Innovation:** Feasibility-first planning with deterministic, explainable trade-offs (**Protect**, **Reduce**, **Defer**).
+- **Development Timeline:** The project and repository were created on **October 1, 2026** (first commit `445c218`), fully within the official EurekaDEV 2026 competition window (September 27 – October 21, 2026).
+- **AI-Assisted Coding Disclosure:** AI tools were used as engineering accelerators for DOM scaffolding, styling, and test generation. **Crucially, zero AI participates in planning decisions**: all scheduling, capacity arithmetic, and sacrifice trade-offs are 100% deterministic, explainable, and reproducible algorithms.
+
+## Key Capabilities
+
+| Capability | Purpose |
+|---|---|
+| **Reality Check** | Immediately computes total workload vs. available study capacity, displaying the exact shortfall. |
+| **Triage Decisions** | Deterministically categorizes tasks into **Protect** (kept in full), **Reduce** (shortened up to 50%), and **Defer** (postponed), each with a plain-English "Why?" explanation. |
+| **Today Focus** | Clear primary action answering "What should I do next?" with session times and progress recording. |
+| **Planning Horizon** | Visualizes daily capacity, scheduled blocks, and breathing room (flex/slack) across the upcoming week. |
+| **What-If Simulation** | Test capacity scenarios (±15 to ±30 min/day) in real time without mutating your real baseline plan. |
+| **Recovery ("I Fell Behind")** | Calm, shame-free replanning: enter the minutes you actually completed, and Triage rebuilds the rest from scratch. |
+| **Local-First & Private** | Zero accounts, zero cloud sync, zero tracking. Auto-saves in browser localStorage with JSON export/import and Print/PDF backup. |
+
 ## Known limitations
 
-- One available-minutes value is applied to every day in the input form.
+- One available-minutes value is applied to every day in the input form (though the underlying engine supports arbitrary per-day capacity arrays).
 - After a REPLAN you cannot start a second REPLAN for the next day.
 - Free minutes shorter than 15 in a day count as capacity but cannot form a session.
-- The planning window and the 50% reduction limit are product settings, not mathematical facts.
+- The planning window (15:00–22:00) and the 50% reduction limit are product settings, not mathematical facts.

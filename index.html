@@ -1567,6 +1567,19 @@ button.primary {
   background: var(--tint-hover);
   border-color: var(--ink3);
 }
+@media print {
+  body { background: #ffffff !important; color: #111111 !important; font-size: 11pt; }
+  main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  .top-bar, .app-nav, #modeBanner, .hero-actions, .truth-contrast, .pillars, .legend,
+  #whatif, .presets-bar, .frm, .av, .hintline, #planBtn, .foot, #modalContainer,
+  .data-actions, .storage-status, #behind, .btn-mode-switch, #useOwn, .btn-sm, #btnClearSaved { display: none !important; }
+  .card, .today-panel, .horizon-panel, .data-panel { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+  .dc, .blk, .hday-card { break-inside: avoid; }
+  details.why { display: block !important; }
+  details.why summary { display: none !important; }
+  details.why p { display: block !important; }
+  a { text-decoration: none !important; color: #111111 !important; }
+}
 </style>
 </head>
 <body>
@@ -2106,6 +2119,7 @@ function renderDataPanel() {
       '<button type="button" class="btn-sm" id="btnExportJson">' + (demoMode ? 'Export Sample Plan (JSON)' : 'Export Plan (JSON)') + '</button>' +
       '<button type="button" class="btn-sm" id="btnImportJson">Import Plan (JSON)</button>' +
       '<button type="button" class="btn-sm" id="btnCopySchedule">' + (demoMode ? 'Copy Sample Schedule (Text)' : 'Copy Schedule (Text)') + '</button>' +
+      '<button type="button" class="btn-sm" id="btnPrintPlan">' + (demoMode ? 'Print Sample Plan' : 'Print Plan') + '</button>' +
       '<button type="button" class="btn-sm" id="btnClearSaved">Clear Saved Plan</button>' +
     '</div>' +
     '<div class="storage-status"><span class="storage-dot"></span><span>Local-First · ' + (demoMode ? 'Showing built-in sample' : 'Auto-saved in browser') + '</span></div>' +
@@ -2114,6 +2128,7 @@ function renderDataPanel() {
   if ($('btnExportJson')) $('btnExportJson').onclick = showExportModal;
   if ($('btnImportJson')) $('btnImportJson').onclick = showImportModal;
   if ($('btnCopySchedule')) $('btnCopySchedule').onclick = copyScheduleToClipboard;
+  if ($('btnPrintPlan')) $('btnPrintPlan').onclick = () => { if (typeof window !== 'undefined' && window.print) window.print(); };
   if ($('btnClearSaved')) $('btnClearSaved').onclick = handleClearSaved;
 }
 
