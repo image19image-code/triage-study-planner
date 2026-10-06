@@ -471,9 +471,9 @@ h2 {
   border-radius: 99px;
   background: var(--ink3);
   }
-  .zone:nth-child(1) .grp::before { background: var(--green); }
-  .zone:nth-child(2) .grp::before { background: var(--amber); }
-  .zone:nth-child(3) .grp::before { background: var(--ink3); }
+  .zone.z-keep .grp::before { background: var(--green); }
+  .zone.z-red .grp::before { background: var(--amber); }
+  .zone.z-def .grp::before { background: var(--ink3); opacity: 0.5; }
 .grp .grp-mark {
   width: 8px; height: 8px;
   border-radius: 2px;
@@ -582,7 +582,7 @@ details.why {
   transition: background 0.12s ease;
 }
 details.why summary:hover {
-  background: rgba(36, 87, 214, 0.08);
+  background: var(--focus-ring);
 }
 details.why summary::-webkit-details-marker { display: none; }
 details.why summary::after {
@@ -1086,11 +1086,12 @@ label {
   position: absolute;
   top: 18px;
   right: 22px;
-  z-index: -1;
+  z-index: 0;
   font: 700 10px/1 var(--sans);
   letter-spacing: 0.18em;
   color: var(--ink3);
-  opacity: 0.7;
+  opacity: 0.5;
+  pointer-events: none;
 }
 .status.bad::after { color: var(--red); }
 .status.warn::after { color: var(--amber); }
@@ -1102,9 +1103,7 @@ label {
 }
 .dc .dn {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .dc .dt {
   padding-top: 2px;
@@ -1236,6 +1235,13 @@ button.primary {
   #tasks.card { padding: var(--s3); }
   .entry { padding: var(--s3); }
   .preset-chip { max-width: 100%; white-space: normal; text-align: left; }
+  .nav-tab { padding: 5px 10px; font-size: 12px; }
+  .horizon-days { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .scenario-grid { grid-template-columns: 1fr 1fr; }
+  .status::after { display: none; }
+  .modal-box { padding: var(--s4); }
+  .data-actions { flex-direction: column; }
+  .data-actions .btn-sm { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -1587,6 +1593,9 @@ button.primary {
   a { text-decoration: none !important; color: #111111 !important; }
 }
 </style>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
 </head>
 <body>
 <a href="#status" class="skip-link">Skip to reality check</a>
@@ -1919,12 +1928,12 @@ function renderTriage() {
     t.why ? 'Importance ' + t.why.level + ' was the least important task still in your plan, and you were ' + fmt(t.why.need) + ' short ' + when(t.why) + '. So Triage ' + (t.decision === 'deferred' ? 'defers it instead of squeezing everything.' : 'shortens it instead of dropping it.') : dl(t.reason);
   const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same decision. No AI.</span></p></details>';
   const card = (cls, t, tag, time) => '<div class="dc ' + cls + '"><span class="dn">' + esc(t.name) + '</span>' + tag + '<span class="dt">' + time + '</span>' + why(t) + '</div>';
-  const zone = (title, hint, items) => (items.length ? '<div class="zone"><div class="grp">' + title + '<span class="hint">' + hint + '</span></div>' + items.join('') + '</div>' : '');
+  const zone = (zcls, title, hint, items) => (items.length ? '<div class="zone ' + zcls + '"><div class="grp">' + title + '<span class="hint">' + hint + '</span></div>' + items.join('') + '</div>' : '');
   const keep = by.full.map((t) => card('keep', t, '<span class="tag">' + (t.protected ? 'PROTECTED' : 'FULL') + '</span>', fmt(t.allocated) + (t.atRisk ? ' <span class="tag risk">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '')));
   const red = by.reduced.map((t) => card('red', t, '', '<span>' + fmt(t.remaining) + '</span> \u2192 <b>' + fmt(t.allocated) + '</b>'));
   const def = by.deferred.map((t) => card('def', t, '<span class="tag">DEFERRED</span>', fmt(t.remaining) + ' not scheduled'));
-  let h = zone('Protect', 'kept in full', keep) + zone('Reduce', 'shortened to fit', red) + zone('Defer', 'left out of this plan', def);
-  if (R.overdue.length) h += zone('Overdue', 'set a new deadline or drop it', R.overdue.map((id) => '<div class="dc def"><span class="dn">' + esc(nm(id)) + '</span></div>'));
+  let h = zone('z-keep', 'Protect', 'kept in full', keep) + zone('z-red', 'Reduce', 'shortened to fit', red) + zone('z-def', 'Defer', 'left out of this plan', def);
+  if (R.overdue.length) h += zone('z-def', 'Overdue', 'set a new deadline or drop it', R.overdue.map((id) => '<div class="dc def"><span class="dn">' + esc(nm(id)) + '</span></div>'));
   $('triage').innerHTML = h || '<span class="mut">Nothing to schedule.</span>';
 }
 
