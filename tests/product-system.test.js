@@ -240,5 +240,56 @@ test('SYS-12 validateImport gracefully rejects non-object task items', () => {
   });
 });
 
+test('SYS-13 loadFromStorage safely sanitizes corrupt localStorage data without crashing', () => {
+  let removed = false;
+  const badStorage = {
+    getItem: () => JSON.stringify({ mode: 'user', draft: [{ name: 'Tampered', estimate: -50, importance: 99 }], available: 120 }),
+    removeItem: (k) => { removed = true; },
+    setItem: () => {}
+  };
+  const a = boot();
+  // Execute loadFromStorage with corrupt storage
+  const ctx = Object.assign({}, a.ctx, { localStorage: badStorage });
+  assert.doesNotThrow(() => {
+    vm.runInNewContext(code, ctx);
+  });
+  assert.strictEqual(removed, true, 'Corrupt storage should be cleared');
+});
+
+test('SYS-14 recovery view provides working cancel action to dismiss without replanning', () => {
+  const a = boot();
+  assert.ok(a.els.behind.innerHTML.includes('id="fb"'));
+  a.els.fb.onclick(); // Open recovery
+  assert.ok(a.els.behind.innerHTML.includes('REPLAN'));
+  assert.ok(a.els.behind.innerHTML.includes('btnCancelBehind'));
+  a.els.btnCancelBehind.onclick(); // Cancel recovery
+  assert.ok(a.els.behind.innerHTML.includes('id="fb"'), 'Must return cleanly to prompt on cancel');
+});
+
+test('SYS-15 trapModalFocus traps Tab key navigation within modal dialog', () => {
+  const a = boot();
+  const focused = [];
+  const btns = [
+    { id: 'btn1', focus: () => focused.push('btn1') },
+    { id: 'btn2', focus: () => focused.push('btn2') }
+  ];
+  const fakeContainer = {
+    hidden: false,
+    querySelectorAll: () => btns
+  };
+  let trapped = false;
+  const keyEvent = {
+    key: 'Tab',
+    shiftKey: false,
+    preventDefault: () => { trapped = true; }
+  };
+  a.ctx.document.activeElement = btns[1]; // activeElement at last item
+  a.ctx.trapModalFocus = vm.runInNewContext('trapModalFocus', a.ctx);
+  a.ctx.trapModalFocus(fakeContainer);
+  fakeContainer.onkeydown(keyEvent);
+  assert.strictEqual(trapped, true, 'Tab at last item must be prevented and wrap to first');
+  assert.strictEqual(focused[0], 'btn1', 'First item must receive focus');
+});
+
 console.log('Product system tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

@@ -1271,6 +1271,12 @@ button.primary {
   color: var(--ink);
   border-color: var(--ink3);
 }
+.nav-tab.active {
+  background: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
 
 /* Today Focus Dashboard */
 .today-panel {
@@ -1908,7 +1914,7 @@ function renderStatus() {
 // ---- Decisions: three zones. The engine decided; the UI only presents (task, status, time, Why?). ----
 function renderTriage() {
   const by = { full: [], reduced: [], deferred: [] }; R.tasks.forEach((t) => { if (by[t.decision]) by[t.decision].push(t); });
-  const when = (w) => 'by ' + (w.day === 0 ? 'today' : w.day === 1 ? 'tomorrow' : 'day ' + w.day);
+  const when = (w) => 'by ' + (w.day === 0 ? 'today' : w.day === 1 ? 'tomorrow' : 'day ' + w.day) + (w.time !== undefined && w.time !== 1320 ? ' at ' + hh(w.time) : '');
   const whyText = (t) => t.protected ? 'Importance 5 is never cut, even when time is short.' : t.decision === 'full' ? 'It fits: there is enough time before its deadline.' :
     t.why ? 'Importance ' + t.why.level + ' was the least important task still in your plan, and you were ' + fmt(t.why.need) + ' short ' + when(t.why) + '. So Triage ' + (t.decision === 'deferred' ? 'defers it instead of squeezing everything.' : 'shortens it instead of dropping it.') : dl(t.reason);
   const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same decision. No AI.</span></p></details>';
@@ -1954,7 +1960,8 @@ function renderBehind(open) {
   const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
   $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">' + kicker + '</div><div class="rec-t">' + title + '</div><div class="mut">' + desc + '</div>' + Object.keys(plannedMin).map((id) =>
     '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
-    '<button type="button" class="primary" id="rp">REPLAN</button></div>';
+    '<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><button type="button" class="primary" id="rp">REPLAN</button><button type="button" class="btn-sm" id="btnCancelBehind">Cancel</button></div></div>';
+  if ($('btnCancelBehind')) $('btnCancelBehind').onclick = () => renderBehind(false);
   $('rp').onclick = () => {
     const before = R, done = {};
     document.querySelectorAll('#behind input').forEach((i) => { const t = S.tasks.find((x) => x.id === i.dataset.id); const add = Math.max(0, Math.round(+i.value || 0)); t.completed += add; done[i.dataset.id] = add; });
@@ -2155,12 +2162,33 @@ function loadFromStorage() {
     if (!raw) return false;
     const data = JSON.parse(raw);
     if (data && Array.isArray(data.draft) && data.draft.length > 0) {
+      const validTasks = [];
+      for (let i = 0; i < data.draft.length; i++) {
+        const item = data.draft[i];
+        if (item && typeof item === 'object') {
+          const vt = TaskInput.validateTask(item);
+          if (vt.ok) {
+            validTasks.push({
+              id: 'u' + (validTasks.length + 1),
+              name: vt.task.name,
+              estimate: vt.task.estimate,
+              importance: vt.task.importance,
+              days: vt.task.days,
+            });
+          }
+        }
+      }
+      if (validTasks.length === 0) {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+        return false;
+      }
       mode = 'user';
-      draft = data.draft;
-      nextId = Math.max(1, ...draft.map((t) => Number(String(t.id).replace(/\D/g, '')) || 0)) + 1;
-      if ($('tAvail') && data.available) $('tAvail').value = String(data.available);
+      draft = validTasks;
+      nextId = validTasks.length + 1;
+      const avVal = data.available ? String(data.available) : '120';
+      if ($('tAvail')) $('tAvail').value = avVal;
       invalidate();
-      const a = TaskInput.validateAvailable($('tAvail') ? $('tAvail').value : '120');
+      const a = TaskInput.validateAvailable(avVal);
       if (a.ok) {
         S = TaskInput.buildState(draft, a.value);
         planned = true;
@@ -2168,7 +2196,9 @@ function loadFromStorage() {
       }
       return true;
     }
-  } catch (e) {}
+  } catch (e) {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+  }
   return false;
 }
 
@@ -2203,10 +2233,34 @@ function handleClearSaved() {
 }
 
 let modalTriggerEl = null;
+function trapModalFocus(container) {
+  if (!container) return;
+  container.onkeydown = (e) => {
+    if (e.key === 'Tab') {
+      const focusable = container.querySelectorAll('button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+      if (!focusable || focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+  };
+}
+
 function closeModal() {
   const container = $('modalContainer');
   if (container) {
     container.hidden = true;
+    container.onkeydown = null;
     container.innerHTML = '';
   }
   if (modalTriggerEl && modalTriggerEl.focus) {
@@ -2250,6 +2304,7 @@ function showExportModal() {
     $('btnCloseModal').onclick = closeModal;
     $('btnCloseModal').focus();
   }
+  trapModalFocus(container);
   if ($('btnCopyJson')) {
     $('btnCopyJson').onclick = () => {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -2297,6 +2352,7 @@ function showImportModal() {
     $('btnCloseModal').onclick = closeModal;
     $('btnCloseModal').focus();
   }
+  trapModalFocus(container);
   if ($('btnDoImport')) {
     $('btnDoImport').onclick = () => {
       const raw = $('impText') ? $('impText').value : '';
@@ -2475,8 +2531,41 @@ if ($('preReview')) $('preReview').onclick = () => setPreset('Review Worksheet',
 if ($('preReading')) $('preReading').onclick = () => setPreset('Reading Assignment', '45', 1, '1');
 $('reset').onclick = () => { mode = 'demo'; draft = []; planned = true; S = demo(); whatIf = 0; recompute(); prev = null; lastDone = {}; clearInvalid(); setMsg(''); $('formErr').textContent = ''; $('availErr').textContent = ''; render(); };
 
+function initNavObserver() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  const navTabs = document.querySelectorAll ? document.querySelectorAll('.nav-tab') : null;
+  if (!navTabs || !navTabs.length) return;
+  const sections = [];
+  navTabs.forEach((tab) => {
+    const hash = tab.getAttribute('href');
+    if (hash && hash.startsWith('#')) {
+      const target = document.querySelector ? document.querySelector(hash) : null;
+      if (target) sections.push({ tab, target });
+    }
+  });
+  if (sections.length && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const match = sections.find((s) => s.target === entry.target);
+          if (match) {
+            navTabs.forEach((t) => {
+              t.classList.remove('active');
+              t.removeAttribute('aria-current');
+            });
+            match.tab.classList.add('active');
+            match.tab.setAttribute('aria-current', 'location');
+          }
+        }
+      });
+    }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+    sections.forEach((s) => obs.observe(s.target));
+  }
+}
+
 loadFromStorage();
 render();
+initNavObserver();
 </script>
 </body>
 </html>
