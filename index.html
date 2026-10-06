@@ -1501,6 +1501,14 @@ button.primary {
   color: var(--ink);
   resize: vertical;
 }
+.btn-warn {
+  background: var(--red) !important;
+  color: #ffffff !important;
+  border-color: var(--red) !important;
+}
+#status, #todayCard, #triage, #horizonCard, #whatif, #behind, #tt, #dataPanel {
+  scroll-margin-top: 20px;
+}
 /* ---- State-Aware Mode Banner ---- */
 .mode-banner {
   display: flex;
@@ -1775,9 +1783,17 @@ const TriageSystem = (function () {
     if (data.tasks.length > TaskInput.LIMITS.MAX_TASKS) return { ok: false, error: 'Too many tasks (max ' + TaskInput.LIMITS.MAX_TASKS + ')' };
     const tasks = [];
     for (let i = 0; i < data.tasks.length; i++) {
-      const vt = TaskInput.validateTask(data.tasks[i]);
+      const item = data.tasks[i];
+      if (!item || typeof item !== 'object') return { ok: false, error: 'Task #' + (i + 1) + ': invalid task format' };
+      const vt = TaskInput.validateTask(item);
       if (!vt.ok) return { ok: false, error: 'Task #' + (i + 1) + ': ' + Object.values(vt.errors).join(' ') };
-      tasks.push(Object.assign({ id: 'u' + (i + 1) }, vt.task));
+      tasks.push({
+        id: 'u' + (i + 1),
+        name: vt.task.name,
+        estimate: vt.task.estimate,
+        importance: vt.task.importance,
+        days: vt.task.days,
+      });
     }
     return { ok: true, tasks, availablePerDay: av.value };
   }
@@ -2098,7 +2114,7 @@ function renderDataPanel() {
   if ($('btnExportJson')) $('btnExportJson').onclick = showExportModal;
   if ($('btnImportJson')) $('btnImportJson').onclick = showImportModal;
   if ($('btnCopySchedule')) $('btnCopySchedule').onclick = copyScheduleToClipboard;
-  if ($('btnClearSaved')) $('btnClearSaved').onclick = clearSavedStorage;
+  if ($('btnClearSaved')) $('btnClearSaved').onclick = handleClearSaved;
 }
 
 const STORAGE_KEY = 'triage_study_planner_state_v1';
@@ -2148,9 +2164,55 @@ function clearSavedStorage() {
   $('reset').onclick();
 }
 
+let clearConfirmTimer = null;
+function handleClearSaved() {
+  const btn = $('btnClearSaved');
+  if (!btn) return;
+  if (btn.dataset.confirming === 'true') {
+    if (clearConfirmTimer) { clearTimeout(clearConfirmTimer); clearConfirmTimer = null; }
+    btn.dataset.confirming = 'false';
+    btn.textContent = 'Clear Saved Plan';
+    btn.classList.remove('btn-warn');
+    clearSavedStorage();
+  } else {
+    btn.dataset.confirming = 'true';
+    btn.textContent = 'Confirm: Clear Saved Plan?';
+    btn.classList.add('btn-warn');
+    clearConfirmTimer = setTimeout(() => {
+      btn.dataset.confirming = 'false';
+      btn.textContent = 'Clear Saved Plan';
+      btn.classList.remove('btn-warn');
+      clearConfirmTimer = null;
+    }, 4000);
+  }
+}
+
+let modalTriggerEl = null;
+function closeModal() {
+  const container = $('modalContainer');
+  if (container) {
+    container.hidden = true;
+    container.innerHTML = '';
+  }
+  if (modalTriggerEl && modalTriggerEl.focus) {
+    modalTriggerEl.focus();
+    modalTriggerEl = null;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const container = $('modalContainer');
+      if (container && !container.hidden) closeModal();
+    }
+  });
+}
+
 function showExportModal() {
   const container = $('modalContainer');
   if (!container) return;
+  modalTriggerEl = document.activeElement;
   const demoMode = mode === 'demo';
   const json = TriageSystem.exportPlanJson(mode === 'user' ? draft : S.tasks, $('tAvail') ? $('tAvail').value : 120);
   container.hidden = false;
@@ -2166,7 +2228,13 @@ function showExportModal() {
     '</div>' +
   '</div>';
 
-  if ($('btnCloseModal')) $('btnCloseModal').onclick = () => { container.hidden = true; };
+  container.onclick = (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) closeModal();
+  };
+  if ($('btnCloseModal')) {
+    $('btnCloseModal').onclick = closeModal;
+    $('btnCloseModal').focus();
+  }
   if ($('btnCopyJson')) {
     $('btnCopyJson').onclick = () => {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -2184,6 +2252,7 @@ function showExportModal() {
         a.href = URL.createObjectURL(blob);
         a.download = 'triage-study-plan.json';
         a.click();
+        setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 1000);
       }
     };
   }
@@ -2192,6 +2261,7 @@ function showExportModal() {
 function showImportModal() {
   const container = $('modalContainer');
   if (!container) return;
+  modalTriggerEl = document.activeElement;
   container.hidden = false;
   container.innerHTML = '<div class="modal-overlay">' +
     '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalImpTitle">' +
@@ -2205,7 +2275,13 @@ function showImportModal() {
     '</div>' +
   '</div>';
 
-  if ($('btnCloseModal')) $('btnCloseModal').onclick = () => { container.hidden = true; };
+  container.onclick = (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) closeModal();
+  };
+  if ($('btnCloseModal')) {
+    $('btnCloseModal').onclick = closeModal;
+    $('btnCloseModal').focus();
+  }
   if ($('btnDoImport')) {
     $('btnDoImport').onclick = () => {
       const raw = $('impText') ? $('impText').value : '';
@@ -2218,7 +2294,7 @@ function showImportModal() {
       draft = res.tasks;
       nextId = draft.length + 1;
       if ($('tAvail')) $('tAvail').value = String(res.availablePerDay);
-      container.hidden = true;
+      closeModal();
       invalidate();
       S = TaskInput.buildState(draft, res.availablePerDay);
       whatIf = 0;

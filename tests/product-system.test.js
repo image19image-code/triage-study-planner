@@ -207,5 +207,38 @@ test('SYS-10 schedule text format generates clean readable output', () => {
   assert.ok(text.includes('15:00'));
 });
 
+test('SYS-11 validateImport protects against prototype pollution and strips unwanted properties', () => {
+  const a = boot();
+  const sys = a.ctx.__sys();
+  const payload = JSON.stringify({
+    app: 'Triage',
+    version: 1,
+    availablePerDay: 90,
+    tasks: [
+      { name: 'Research task', estimate: 45, importance: 3, days: 1, role: 'admin', isMalicious: true }
+    ]
+  });
+  const res = sys.validateImport(payload);
+  assert.strictEqual(res.ok, true);
+  assert.strictEqual(res.tasks.length, 1);
+  const task = res.tasks[0];
+  assert.strictEqual(task.name, 'Research task');
+  assert.strictEqual(task.estimate, 45);
+  assert.strictEqual(task.role, undefined);
+  assert.strictEqual(task.isMalicious, undefined);
+  assert.deepStrictEqual(Object.keys(task).sort(), ['days', 'estimate', 'id', 'importance', 'name']);
+});
+
+test('SYS-12 validateImport gracefully rejects non-object task items', () => {
+  const a = boot();
+  const sys = a.ctx.__sys();
+  ['null', '"just a string"', '123'].forEach((invalidItem) => {
+    const payload = '{"app":"Triage","version":1,"availablePerDay":90,"tasks":[' + invalidItem + ']}';
+    const res = sys.validateImport(payload);
+    assert.strictEqual(res.ok, false);
+    assert.ok(/invalid task format/i.test(res.error));
+  });
+});
+
 console.log('Product system tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

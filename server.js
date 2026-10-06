@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
+app.use('/triage-study-planner', express.static(path.join(__dirname)));
 app.use(express.static(path.join(__dirname)));
 
 app.get('/health', (req, res) => {
