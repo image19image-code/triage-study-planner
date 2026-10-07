@@ -4,9 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Triage: Study Planner</title>
-<meta name="description" content="Deterministic study planner that tells the truth with Protect, Reduce, and Defer decisions.">
-<meta property="og:title" content="Triage: Study Planner">
-<meta property="og:description" content="Deterministic study planner that tells the truth with Protect, Reduce, and Defer decisions.">
+<meta name="description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
+<meta property="og:title" content="Triage: The study planner that tells the truth">
+<meta property="og:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta property="og:image" content="/triage-og.svg">
+<meta property="og:image:alt" content="Triage study planner showing 10h needed, 8h available, short by 2h">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Triage: The study planner that tells the truth">
+<meta name="twitter:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta name="twitter:image" content="/triage-og.svg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%2316171a'/%3E%3Cpath%20d='M18%2021h28M32%2021v27'%20stroke='%23f6f5f1'%20stroke-width='7'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E">
 <style>
 /* ---- Triage Design System: Editorial, Honest, Deterministic ---- */
@@ -152,9 +158,9 @@ main {
 
 /* Hero */
 .hero {
-  padding: var(--s3) 0 var(--s6);
-  border-bottom: 1px solid var(--line);
-  margin-bottom: var(--s5);
+  padding: 0 0 var(--s3);
+  margin-bottom: var(--s3);
+  border-bottom: 0;
 }
 .hero-mark {
   display: inline-block;
@@ -162,132 +168,64 @@ main {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink3);
-  margin-bottom: var(--s3);
+  margin-bottom: 2px;
 }
 h1 {
   margin: 0;
-  font: 700 clamp(44px, 10vw, 68px)/1.02 var(--serif);
+  font: 700 clamp(40px, 7vw, 56px)/1.02 var(--serif);
   letter-spacing: -0.038em;
   color: var(--ink);
 }
 .tagline {
-  margin: var(--s3) 0 0;
-  font: italic 400 clamp(20px, 4.8vw, 28px)/1.3 var(--serif);
+  margin: 2px 0 0;
+  font: italic 400 clamp(18px, 3.2vw, 24px)/1.3 var(--serif);
   color: var(--ink2);
 }
-  .lead0 {
-  margin: var(--s4) 0 var(--s4);
-  font-size: 16px;
-  line-height: 1.6;
-  max-width: 40em;
+.lead0 {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 36em;
   color: var(--ink2);
-  }
-  .hero-actions {
+}
+.hero-actions {
   display: flex;
   align-items: center;
   gap: var(--s3);
-  margin: var(--s4) 0 var(--s5);
-  }
-  .hero-cta {
+  margin: var(--s2) 0 0;
+}
+.hero-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 10px 16px;
+  min-height: 38px;
+  padding: 7px 16px;
   background: var(--ink);
   color: var(--surface);
   border: 1px solid var(--ink);
   border-radius: var(--r1);
+  font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow-sm);
   transition: background 0.12s ease, transform 0.06s ease;
-  }
-  .hero-cta:hover { background: var(--ink2); }
-  .hero-cta:active { transform: translateY(1px); }
-  .hero-actions .mut { font-size: 13px; }
-
-
-/* 3 Pillars Explainer */
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s3);
-  margin: var(--s5) 0 var(--s4);
 }
-.pillar-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r2);
-  padding: var(--s4);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
-  overflow: hidden;
-}
-.pillar-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-.pillar-card.p-keep::before { background: var(--green); }
-.pillar-card.p-red::before { background: var(--amber); }
-.pillar-card.p-def::before { background: var(--ink3); opacity: 0.5; }
-.pillar-icon {
-  width: 32px; height: 32px;
-  border-radius: var(--r1);
-  display: flex;
+.hero-cta:hover { background: var(--ink2); }
+.hero-cta:active { transform: translateY(1px); }
+.hero-secondary {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 2px;
-}
-.pillar-card.p-keep .pillar-icon { background: var(--green-bg); color: var(--green); }
-.pillar-card.p-red .pillar-icon { background: var(--amber-bg); color: var(--amber); }
-.pillar-card.p-def .pillar-icon { background: var(--tint); color: var(--ink3); }
-.pillar-icon svg { width: 18px; height: 18px; }
-.pillar-card strong {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  font-weight: 700;
-}
-.pillar-card.p-keep strong { color: var(--green); }
-.pillar-card.p-red strong { color: var(--amber); }
-.pillar-card.p-def strong { color: var(--ink2); }
-.pillar-card p {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.45;
+  min-height: 38px;
+  padding: 7px 2px;
   color: var(--ink2);
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
 }
-
-/* Legend */
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s2) var(--s4);
-  font-size: 13px;
-  color: var(--ink2);
-  padding: var(--s2) 0 0;
-}
-.k {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  margin-right: 6px;
-  vertical-align: -1px;
-}
-.k.keep { background: var(--green); }
-.k.red { background: var(--amber); }
-.k.def { background: var(--ink2); opacity: 0.6; }
-.k.have { background: var(--ink); }
-.k.gap { background: var(--red); }
+.hero-secondary:hover { color: var(--ink); text-decoration-color: var(--ink); }
+.hero-proof { margin: 6px 0 0; color: var(--ink3); font-size: 13px; }
 
 h2 {
   margin: var(--s6) 0 var(--s3);
@@ -320,20 +258,22 @@ h2 {
 }
 
 /* status: the core insight */
-  .status {
-  border-radius: var(--r3);
-  padding: var(--s5) var(--s5) var(--s5);
+#status { scroll-margin-top: 20px; }
+.status {
+  border-radius: var(--r2);
+  padding: clamp(20px, 4vw, 36px);
   background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow-lg);
-  margin-bottom: var(--s5);
+  box-shadow: var(--shadow);
+  margin-top: var(--s3);
+  margin-bottom: var(--s3);
   position: relative;
   overflow: hidden;
-  }
-  .status.bad { background: linear-gradient(135deg, var(--surface) 0%, var(--red-bg) 180%); }
-  .status.warn { background: linear-gradient(135deg, var(--surface) 0%, var(--amber-bg) 180%); }
-  .status.ok { background: linear-gradient(135deg, var(--surface) 0%, var(--green-bg) 180%); }
-  .status::before {
+}
+.status.bad { background: linear-gradient(135deg, var(--surface) 0%, var(--red-bg) 180%); }
+.status.warn { background: linear-gradient(135deg, var(--surface) 0%, var(--amber-bg) 180%); }
+.status.ok { background: linear-gradient(135deg, var(--surface) 0%, var(--green-bg) 180%); }
+.status::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -343,79 +283,79 @@ h2 {
 .status.bad::before { background: var(--red); }
 .status.warn::before { background: var(--amber); }
 .status.ok::before { background: var(--green); }
-.eyebrow {
+.status .eyebrow {
   font: 700 11px/1 var(--sans);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink3);
   display: flex;
   align-items: center;
   gap: var(--s2);
 }
-.big {
-  margin: var(--s3) 0 var(--s2);
-  font: 700 clamp(34px, 8.5vw, 54px)/1.05 var(--serif);
-  letter-spacing: -0.03em;
+.status .big {
+  margin: var(--s2) 0 var(--s1);
+  font: 700 clamp(38px, 7.5vw, 62px)/1.05 var(--serif);
+  letter-spacing: -0.04em;
 }
 .status.bad .big { color: var(--red); }
 .status.warn .big { color: var(--amber); }
 .status.ok .big { color: var(--green); }
-.lead {
+.status .lead {
   color: var(--ink2);
-  font-size: 16px;
+  font-size: 15.5px;
   line-height: 1.5;
   max-width: 38em;
 }
 
-  /* Bar meter */
-  .bar-label {
+/* Bar meter */
+.status .bar-label {
   display: flex;
   justify-content: space-between;
   gap: var(--s3);
-  margin-top: var(--s5);
+  margin-top: var(--s3);
   font-size: 12px;
   font-weight: 600;
   color: var(--ink3);
-  }
-  .bar-label b { color: var(--ink2); font-variant-numeric: tabular-nums; }
-  .bar {
+}
+.status .bar-label b { color: var(--ink2); font-variant-numeric: tabular-nums; }
+.status .bar {
   display: flex;
   height: 14px;
   border-radius: 99px;
   overflow: hidden;
   background: var(--tint);
-  margin: var(--s5) 0 var(--s2);
+  margin: var(--s2) 0 var(--s2);
   border: 1px solid var(--line);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-.bar span {
+.status .bar span {
   display: block;
   height: 100%;
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.bar .have { background: var(--ink); }
-.bar .gap { background: var(--red); }
-.key {
+.status .bar .have { background: var(--ink); }
+.status .bar .gap { background: var(--red); }
+.status .key {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s2) var(--s4);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--ink2);
 }
 
 /* Stat numbers - Distinct high-legibility cards */
-.nums {
+.status .nums {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--s3);
-  margin-top: var(--s5);
-  padding-top: var(--s4);
+  gap: var(--s2);
+  margin-top: var(--s4);
+  padding-top: var(--s3);
   border-top: 1px solid var(--line-light);
 }
-.nums > div {
-  padding: 14px 16px;
+.status .nums > div {
+  padding: 12px 14px;
   background: var(--tint);
   border-radius: var(--r1);
   border: 1px solid var(--line-light);
@@ -423,14 +363,14 @@ h2 {
   flex-direction: column;
   justify-content: center;
 }
-.nums b {
+.status .nums b {
   display: block;
-  font: 700 clamp(22px, 5.5vw, 34px)/1.1 var(--serif);
-  letter-spacing: -0.02em;
+  font: 700 clamp(26px, 5.2vw, 38px)/1.1 var(--serif);
+  letter-spacing: -0.025em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
-.nums span {
+.status .nums span {
   font-size: 11px;
   color: var(--ink3);
   font-weight: 700;
@@ -438,11 +378,62 @@ h2 {
   letter-spacing: 0.08em;
   margin-top: 4px;
 }
-.nums .neg b { color: var(--red); }
-.nums .neg {
+.status .nums .neg b { color: var(--red); }
+.status .nums .neg {
   background: var(--red-bg);
   border-color: var(--red-line);
 }
+
+details.assumptions {
+  margin-top: var(--s4);
+  border-top: 1px solid var(--line-light);
+  padding-top: var(--s3);
+  color: var(--ink3);
+  font-size: 12px;
+}
+details.assumptions summary { cursor: pointer; color: var(--ink2); font-weight: 650; }
+details.assumptions p { max-width: 58em; margin: var(--s2) 0 0; line-height: 1.5; }
+
+/* Decision Ribbon */
+.decision-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin: 0 0 var(--s5);
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+.decision-label {
+  color: var(--ink3);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.decision-flow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font: 700 clamp(18px, 4vw, 24px)/1 var(--serif);
+  white-space: nowrap;
+}
+.decision-flow span { color: var(--ink3); font: 600 15px var(--sans); }
+.flow-protect { color: var(--green); }
+.flow-reduce { color: var(--amber); }
+.flow-defer { color: var(--ink2); }
+.why-link {
+  color: var(--focus);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.why-link:hover { text-decoration: underline; }
 .status.fresh, .chg.fresh {
   animation: fresh 0.7s ease-out;
 }
@@ -691,21 +682,23 @@ details.why p {
 }
 
 /* Recovery: I Fell Behind */
-  .rec {
-  background: linear-gradient(135deg, var(--amber-bg), var(--surface));
+#behind { scroll-margin-top: 20px; }
+.rec {
+  background: var(--amber-bg);
   border: 1px solid var(--amber-line);
+  border-top: 3px solid var(--amber);
   border-radius: var(--r2);
-  padding: var(--s5);
-  box-shadow: var(--shadow);
-  }
-  .rec-kicker {
+  padding: clamp(20px, 4vw, 32px);
+  box-shadow: var(--shadow-sm);
+}
+.rec-kicker {
   color: var(--amber);
   font: 700 11px/1 var(--sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: var(--s2);
-  }
-  .rec-t {
+}
+.rec-t {
   font: 700 22px/1.2 var(--serif);
   margin-bottom: var(--s1);
   color: var(--ink);
@@ -724,6 +717,7 @@ details.why p {
   border-top: 1px solid var(--amber-line);
 }
 .rec button { margin-top: var(--s4); }
+.rec .recover { min-height: 46px; font-weight: 800; letter-spacing: 0.04em; }
 .chg {
   border-left: 4px solid var(--focus);
   background: var(--surface);
@@ -1204,9 +1198,9 @@ button.primary {
 }
 #useOwn { margin-top: var(--s4) !important; }
 .status { margin-top: var(--s6); }
-.status .lead { max-width: 34em; }
-.nums > div { min-height: 78px; }
-.dc { border-radius: 10px; }
+.status .lead { max-width: 38em; }
+.nums > div { min-height: 72px; }
+.dc { border-radius: var(--r1); }
 .dc .dn { letter-spacing: -0.01em; }
 .tag { line-height: 1.2; }
 .rec { border-radius: var(--r2); }
@@ -1215,23 +1209,64 @@ button.primary {
 .wi .back { border-width: 1px; }
 .trow button { background: transparent; }
 
+/* Editorial Hierarchy */
+#tasks.card, #triage.card, #blocks.card {
+  box-shadow: none;
+  border-radius: var(--r2);
+}
+#rest > h2#triageHeading {
+  margin-top: var(--s6);
+  border-top: 2px solid var(--ink);
+}
+#rest > h2#triageHeading::before {
+  content: "TRIAGE";
+  display: block;
+  margin-bottom: var(--s2);
+  color: var(--green);
+  font: 800 11px/1 var(--sans);
+  letter-spacing: 0.18em;
+}
+#rest > h2#planTitle::before {
+  content: "ACTION";
+  display: block;
+  margin-bottom: var(--s2);
+  color: var(--focus);
+  font: 800 11px/1 var(--sans);
+  letter-spacing: 0.18em;
+}
+.zone { margin-bottom: var(--s5); }
+.grp { margin-bottom: var(--s3); font-size: 20px; }
+
 @media (max-width: 620px) {
   main { padding-bottom: 72px; }
-  .top-bar { margin-bottom: var(--s4); }
+  .top-bar { margin-bottom: var(--s3); }
   .brand-pill { max-width: 100%; }
-  .hero { padding-bottom: var(--s4); margin-bottom: var(--s5); }
-  .truth-contrast { margin-top: var(--s4); }
-  .pillar-card { min-height: 0; padding: var(--s3) var(--s4); }
-  h2 { margin-top: var(--s6); }
-  .status { margin-top: var(--s5); }
-  .status .big { max-width: 12ch; }
-  .nums > div { min-height: 0; padding: 12px; }
+  .hero { padding-bottom: var(--s2); margin-bottom: var(--s3); }
+  .decision-ribbon {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+    padding: 14px 16px;
+  }
+  .decision-flow { font-size: 20px; }
+  .why-link { font-size: 13px; }
+  h2 { margin-top: var(--s5); }
+  .status { margin-top: var(--s3); }
+  .status .big { max-width: 12ch; font-size: clamp(34px, 8vw, 48px); }
+  .nums > div { min-height: 0; padding: 10px 11px; }
+  .status .nums b { font-size: 24px; }
   .dc .tag { margin-top: 2px; }
   .rec .fr { align-items: flex-start; flex-direction: column; gap: var(--s1); }
+  .hero-actions { align-items: flex-start; flex-direction: column; gap: var(--s2); }
 }
 @media (max-width: 420px) {
   .brand-pill { font-size: 10px; }
-  .hero-actions .mut { line-height: 1.35; }
+  .hero-actions .mut { display: none; }
+  .status { padding: var(--s3) var(--s3) var(--s4); }
+  .status .big { font-size: clamp(30px, 9vw, 42px); }
+  .status .nums > div { padding: 8px 9px; }
+  .status .nums b { font-size: 20px; }
+  .status .nums span { font-size: 10px; }
   #tasks.card { padding: var(--s3); }
   .entry { padding: var(--s3); }
   .preset-chip { max-width: 100%; white-space: normal; text-align: left; }
@@ -1590,9 +1625,6 @@ button.primary {
   a { text-decoration: none !important; color: #111111 !important; }
 }
 </style>
-  <meta property="og:image" content="https://bolt.new/static/og_default.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
 </head>
 <body>
 <a href="#status" class="skip-link">Skip to reality check</a>
@@ -1600,16 +1632,16 @@ button.primary {
   <div class="top-bar">
     <div class="brand-pill" role="status">
       <span class="dot" aria-hidden="true"></span>
-      <span>Deterministic · Reality-Grounded · No AI</span>
+      <span>Same input, same plan · Reality-grounded</span>
     </div>
   </div>
   <nav class="app-nav" aria-label="Section navigation">
     <a href="#status" class="nav-tab">Reality Check</a>
-    <a href="#todayCard" class="nav-tab">Today Focus</a>
     <a href="#triage" class="nav-tab">Triage Decisions</a>
+    <a href="#planTitle" class="nav-tab">Today’s Action</a>
     <a href="#horizonCard" class="nav-tab">Planning Horizon</a>
-    <a href="#whatif" class="nav-tab">What-If Lab</a>
     <a href="#behind" class="nav-tab">Recovery</a>
+    <a href="#whatif" class="nav-tab">What-If Lab</a>
     <a href="#tt" class="nav-tab"><span id="navTasksLabel">Work Queue</span></a>
     <a href="#dataPanel" class="nav-tab">Data &amp; Backup</a>
   </nav>
@@ -1618,49 +1650,37 @@ button.primary {
     <span class="hero-mark">Triage Study Planner</span>
     <h1>Triage</h1>
     <p class="tagline">Study planner that tells the truth.</p>
-    <p class="lead0">Most planners accept impossible plans and set you up to fail. Triage checks physical reality first: it calculates whether your workload fits and decides what to protect, reduce, and defer.</p>
+    <p class="lead0">The planner that tells you what realistically fits.</p>
     <div class="hero-actions">
-      <a class="hero-cta" id="heroCta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
-      <span class="mut">Plan against the time you actually have.</span>
+      <a class="hero-cta" id="heroCta" href="#status">See what fits <span aria-hidden="true">↓</span></a>
+      <a class="hero-secondary" href="#tt">Plan with my own tasks</a>
     </div>
-    <div class="truth-contrast" role="region" aria-label="Why Triage exists">
-      <div class="contrast-col illusion">
-        <span class="contrast-badge">Traditional Planners</span>
-        <p>Accept whatever you type. Let you schedule 14h of work into an 8h day, leading to late-night panic and guaranteed failure.</p>
-      </div>
-      <div class="contrast-col truth">
-        <span class="contrast-badge">Triage Reality Law</span>
-        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Reduce</b>, and what to <b>Defer</b> so your plan actually works.</p>
-      </div>
-    </div>
-    <div class="pillars" role="region" aria-label="Triage Decision System">
-      <div class="pillar-card p-keep">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
-        <strong>Protect</strong>
-        <p>Crucial work &amp; importance 5 are guarded in full.</p>
-      </div>
-      <div class="pillar-card p-red">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/></svg></div>
-        <strong>Reduce</strong>
-        <p>Flexible tasks are trimmed to realistic bounds.</p>
-      </div>
-      <div class="pillar-card p-def">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-        <strong>Defer</strong>
-        <p>Excess work is postponed to preserve what fits.</p>
-      </div>
-    </div>
-    <div class="legend" role="group" aria-label="Colour key"><span><span class="k keep"></span>Protect</span><span><span class="k red"></span>Reduce</span><span><span class="k def"></span>Defer</span><span><span class="k gap"></span>Not enough time</span></div>
+    <p class="hero-proof">Workload → capacity → a plan you can keep.</p>
   </header>
   <div class="sr" id="announce" aria-live="polite"></div>
   <div id="status" tabindex="-1"></div>
-  <div class="card wi" id="whatif">
-    <div class="wi-t">What if study time changed?</div>
-    <p class="mut" id="wiDesc" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting daily study capacity reshapes Protect, Reduce, and Defer decisions without altering your baseline plan.</p>
-    <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
-    <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
-    <div id="scenarioMatrix" class="scenario-grid" style="margin-top:14px"></div>
+  <section class="decision-ribbon" id="decisionRibbon" aria-label="Triage decisions">
+    <span class="decision-label">Then Triage decides</span>
+    <div class="decision-flow"><b class="flow-protect">Protect</b><span aria-hidden="true">→</span><b class="flow-reduce">Reduce</b><span aria-hidden="true">→</span><b class="flow-defer">Defer</b></div>
+    <a class="why-link" href="#triage">See why each task landed there <span aria-hidden="true">↓</span></a>
+  </section>
+
+  <div id="rest">
+    <h2 id="triageHeading">Triage Decisions</h2><div class="card" id="triage"></div>
+    <div id="todayCard"></div>
+    <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
+    <div id="horizonCard"></div>
+    <h2>If you fall behind</h2><div id="behind"></div>
+    <div id="changes"></div>
+    <div class="card wi" id="whatif">
+      <div class="wi-t">What if study time changed?</div>
+      <p class="mut" id="wiDesc" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting daily study capacity reshapes Protect, Reduce, and Defer decisions without altering your baseline plan.</p>
+      <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
+      <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
+      <div id="scenarioMatrix" class="scenario-grid" style="margin-top:14px"></div>
+    </div>
   </div>
+
   <div id="empty" class="card empty" hidden><b>Nothing planned yet</b>Add your tasks below, enter your study time, then press PLAN MY TIME.</div>
 
   <h2 id="tt"><span id="taskHeadingLabel">Sample tasks</span> <span id="taskCount" class="count"></span></h2>
@@ -1700,15 +1720,7 @@ button.primary {
     </div>
   </div>
 
-  <div id="rest">
-    <div id="todayCard"></div>
-    <h2>Triage Decisions</h2><div class="card" id="triage"></div>
-    <div id="horizonCard"></div>
-    <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
-    <h2>If you fall behind</h2><div id="behind"></div>
-    <div id="changes"></div>
-    <div id="dataPanel"></div>
-  </div>
+  <div id="dataPanel"></div>
   <div id="modalContainer" hidden></div>
   <div class="foot"><button type="button" id="reset">Reset demo</button><span>Every decision comes from a deterministic engine. No AI makes them.</span></div>
 </main>
@@ -1914,7 +1926,8 @@ function renderStatus() {
     '<div class="bar-label"><span>' + (demoMode ? 'Sample workload against study capacity' : 'Workload against available time') + '</span><b>' + (gap ? fmt(gap) + ' missing' : 'Enough time') + '</b></div>' +
     '<div class="bar"><span class="have" style="width:' + pc(covered) + '%"></span><span class="gap" style="width:' + pc(gap) + '%"></span></div>' +
     '<div class="key"><span><span class="k have"></span>' + keyLabel + '</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
-    '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div></div>';
+    '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div>' +
+    '<details class="assumptions"><summary>Planning assumptions</summary><p>Based on your available study time, a 15:00–22:00 study window, and a 50% reduction floor for tasks that can be shortened. This is the truth about this plan under these assumptions.</p></details></div>';
 }
 
 // ---- Decisions: three zones. The engine decided; the UI only presents (task, status, time, Why?). ----
@@ -1923,7 +1936,7 @@ function renderTriage() {
   const when = (w) => 'by ' + (w.day === 0 ? 'today' : w.day === 1 ? 'tomorrow' : 'day ' + w.day) + (w.time !== undefined && w.time !== 1320 ? ' at ' + hh(w.time) : '');
   const whyText = (t) => t.protected ? 'Importance 5 is never cut, even when time is short.' : t.decision === 'full' ? 'It fits: there is enough time before its deadline.' :
     t.why ? 'Importance ' + t.why.level + ' was the least important task still in your plan, and you were ' + fmt(t.why.need) + ' short ' + when(t.why) + '. So Triage ' + (t.decision === 'deferred' ? 'defers it instead of squeezing everything.' : 'shortens it instead of dropping it.') : dl(t.reason);
-  const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same decision. No AI.</span></p></details>';
+  const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same plan. No AI.</span></p></details>';
   const card = (cls, t, tag, time) => '<div class="dc ' + cls + '"><span class="dn">' + esc(t.name) + '</span>' + tag + '<span class="dt">' + time + '</span>' + why(t) + '</div>';
   const zone = (zcls, title, hint, items) => (items.length ? '<div class="zone ' + zcls + '"><div class="grp">' + title + '<span class="hint">' + hint + '</span></div>' + items.join('') + '</div>' : '');
   const keep = by.full.map((t) => card('keep', t, '<span class="tag">' + (t.protected ? 'PROTECTED' : 'FULL') + '</span>', fmt(t.allocated) + (t.atRisk ? ' <span class="tag risk">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '')));
@@ -2436,10 +2449,17 @@ function render() {
   const show = mode === 'demo' || planned;
   $('whatif').hidden = !show; renderWhatIf();
   $('empty').hidden = show; $('status').hidden = !show; $('rest').hidden = !show;
+  if ($('decisionRibbon')) $('decisionRibbon').hidden = !show;
   renderModeBanner();
   renderTasks();
   if ($('heroCta')) {
-    $('heroCta').innerHTML = mode === 'demo' ? 'Start with your own tasks <span aria-hidden="true">&darr;</span>' : 'View your tasks <span aria-hidden="true">&darr;</span>';
+    if (mode === 'demo') {
+      $('heroCta').innerHTML = 'See what fits <span aria-hidden="true">&darr;</span>';
+      $('heroCta').setAttribute('href', '#status');
+    } else {
+      $('heroCta').innerHTML = 'View your tasks <span aria-hidden="true">&darr;</span>';
+      $('heroCta').setAttribute('href', '#tt');
+    }
   }
   if (show) {
     renderStatus();
