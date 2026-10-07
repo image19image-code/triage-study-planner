@@ -4,9 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Triage: Study Planner</title>
-<meta name="description" content="Deterministic study planner that tells the truth with Protect, Reduce, and Defer decisions.">
-<meta property="og:title" content="Triage: Study Planner">
-<meta property="og:description" content="Deterministic study planner that tells the truth with Protect, Reduce, and Defer decisions.">
+<meta name="description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
+<meta property="og:title" content="Triage: The study planner that tells the truth">
+<meta property="og:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta property="og:image" content="/triage-og.svg">
+<meta property="og:image:alt" content="Triage study planner showing 10h needed, 8h available, short by 2h">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Triage: The study planner that tells the truth">
+<meta name="twitter:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta name="twitter:image" content="/triage-og.svg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%2316171a'/%3E%3Cpath%20d='M18%2021h28M32%2021v27'%20stroke='%23f6f5f1'%20stroke-width='7'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E">
 <style>
 /* ---- Triage Design System: Editorial, Honest, Deterministic ---- */
@@ -206,9 +212,22 @@ h1 {
   .hero-cta:hover { background: var(--ink2); }
   .hero-cta:active { transform: translateY(1px); }
   .hero-actions .mut { font-size: 13px; }
+  .hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 2px;
+    color: var(--ink2);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 4px;
+  }
+  .hero-secondary:hover { color: var(--ink); text-decoration-color: var(--ink); }
+  .hero-proof { margin: -8px 0 0; color: var(--ink3); font-size: 13px; }
 
-
-/* 3 Pillars Explainer */
+  /* 3 Pillars Explainer */
 .pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1340,6 +1359,15 @@ button.primary {
   .status .eyebrow { letter-spacing: 0.16em; }
   .status .big { font-size: clamp(42px, 8vw, 72px); letter-spacing: -0.045em; }
   .status .lead { max-width: 38em; font-size: 17px; }
+  details.assumptions {
+    margin-top: var(--s4);
+    border-top: 1px solid var(--line-light);
+    padding-top: var(--s3);
+    color: var(--ink3);
+    font-size: 12px;
+  }
+  details.assumptions summary { cursor: pointer; color: var(--ink2); font-weight: 650; }
+  details.assumptions p { max-width: 58em; margin: var(--s2) 0 0; line-height: 1.5; }
   .decision-ribbon {
     margin: var(--s6) 0 var(--s7);
     padding: var(--s4) 0;
@@ -1381,6 +1409,9 @@ button.primary {
   .grp { margin-bottom: var(--s4); font-size: 22px; }
   .dc { box-shadow: none; border-radius: 0; border-width: 1px 0 0 4px; padding: 16px 12px 16px 18px; }
   .rec { border-radius: 0; box-shadow: none; border-width: 1px 0; background: var(--amber-bg); }
+  #behind { scroll-margin-top: 16px; }
+  #behind .rec { padding: clamp(20px, 4vw, 32px); border-top: 2px solid var(--amber); }
+  #behind .recover { min-height: 46px; font-weight: 800; letter-spacing: 0.04em; }
   .foot { margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--line); }
   @media (max-width: 560px) {
     .status { margin-left: -var(--s4); margin-right: -var(--s4); padding: 24px var(--s4); }
@@ -1396,7 +1427,7 @@ button.primary {
   <div class="top-bar">
     <div class="brand-pill" role="status">
       <span class="dot" aria-hidden="true"></span>
-      <span>Deterministic · Reality-Grounded · No AI</span>
+      <span>Same input, same plan · Reality-grounded</span>
     </div>
   </div>
   <header class="hero">
@@ -1405,9 +1436,10 @@ button.primary {
     <p class="tagline">Study planner that tells the truth.</p>
     <p class="lead0">The planner that tells you what realistically fits.</p>
     <div class="hero-actions">
-      <a class="hero-cta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
-      <span class="mut">Workload → capacity → a plan you can keep.</span>
+      <a class="hero-cta" href="#status">See what fits <span aria-hidden="true">↓</span></a>
+      <a class="hero-secondary" href="#tt">Plan with my own tasks</a>
     </div>
+    <p class="hero-proof">Workload → capacity → a plan you can keep.</p>
   </header>
   <div class="sr" id="announce" aria-live="polite"></div>
   <div id="status" tabindex="-1"></div>
@@ -1416,12 +1448,6 @@ button.primary {
     <div class="decision-flow"><b class="flow-protect">Protect</b><span aria-hidden="true">→</span><b class="flow-reduce">Reduce</b><span aria-hidden="true">→</span><b class="flow-defer">Defer</b></div>
     <a class="why-link" href="#triage">See why each task landed there <span aria-hidden="true">↓</span></a>
   </section>
-  <div class="card wi" id="whatif">
-    <div class="wi-t">WHAT-IF · Change your time</div>
-    <p class="mut" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.</p>
-    <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
-    <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
-  </div>
   <div id="empty" class="card empty" hidden><b>Nothing planned yet</b>Add your tasks below, enter your study time, then press PLAN MY TIME.</div>
 
   <h2 id="tt">TASKS <span id="taskCount" class="count"></span></h2>
@@ -1463,6 +1489,14 @@ button.primary {
     <h2 id="planTitle">Today’s action</h2><div class="card" id="blocks"></div>
     <h2>I fell behind</h2><div id="behind"></div>
     <div id="changes"></div>
+    <div id="whatif-slot">
+      <div class="card wi" id="whatif">
+        <div class="wi-t">WHAT-IF · Change your time</div>
+        <p class="mut" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.</p>
+        <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
+        <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
+      </div>
+    </div>
   </div>
   <div class="foot"><button type="button" id="reset">Reset demo</button><span>Every decision comes from a deterministic engine. No AI makes them.</span></div>
 </main>
@@ -1505,7 +1539,7 @@ function renderStatus() {
     '<div class="bar-label"><span>Workload against available time</span><b>' + (gap ? fmt(gap) + ' missing' : 'Enough time') + '</b></div>' +
     '<div class="bar"><span class="have" style="width:' + pc(covered) + '%"></span><span class="gap" style="width:' + pc(gap) + '%"></span></div>' +
     '<div class="key"><span><span class="k have"></span>Covered by your time</span>' + (gap ? '<span><span class="k gap"></span>Missing</span>' : '') + '</div>' +
-    '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div></div>';
+    '<div class="nums"><div><b>' + fmt(s.workload) + '</b><span>needed</span></div><div><b>' + fmt(s.capacity) + '</b><span>available</span></div><div class="' + (s.shortfall > 0 ? 'neg' : '') + '"><b>' + fmt(s.shortfall) + '</b><span>shortfall</span></div></div><details class="assumptions"><summary>Planning assumptions</summary><p>Based on your available study time, a 15:00–22:00 study window, and a 50% reduction floor for tasks that can be shortened. This is the truth about this plan under these assumptions.</p></details></div>';
 }
 
 // ---- Decisions: three zones. The engine decided; the UI only presents (task, status, time, Why?). ----
@@ -1514,7 +1548,7 @@ function renderTriage() {
   const when = (w) => 'by ' + (w.day === 0 ? 'today' : w.day === 1 ? 'tomorrow' : 'day ' + w.day);
   const whyText = (t) => t.protected ? 'Importance 5 is never cut, even when time is short.' : t.decision === 'full' ? 'It fits: there is enough time before its deadline.' :
     t.why ? 'Importance ' + t.why.level + ' was the least important task still in your plan, and you were ' + fmt(t.why.need) + ' short ' + when(t.why) + '. So Triage ' + (t.decision === 'deferred' ? 'defers it instead of squeezing everything.' : 'shortens it instead of dropping it.') : dl(t.reason);
-  const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same decision. No AI.</span></p></details>';
+  const why = (t) => '<details class="why"><summary>Why?</summary><p>' + esc(whyText(t)) + '<span class="det">Same input, same plan. No AI.</span></p></details>';
   const card = (cls, t, tag, time) => '<div class="dc ' + cls + '"><span class="dn">' + esc(t.name) + '</span>' + tag + '<span class="dt">' + time + '</span>' + why(t) + '</div>';
   const zone = (title, hint, items) => (items.length ? '<div class="zone"><div class="grp">' + title + '<span class="hint">' + hint + '</span></div>' + items.join('') + '</div>' : '');
   const keep = by.full.map((t) => card('keep', t, '<span class="tag">' + (t.protected ? 'PROTECTED' : 'FULL') + '</span>', fmt(t.allocated) + (t.atRisk ? ' <span class="tag risk">AT RISK: ' + fmt(t.unplaced) + ' unplaced</span>' : '')));
