@@ -79,7 +79,7 @@ Labelled fields, keyboard entry (Enter adds a task), visible focus, errors that 
 - **Track:** Coding Track (Computer Science + AI)
 - **Problem Statement:** Students routinely fall into the "wishful scheduling" trap—traditional planners accept 14 hours of tasks into an 8-hour day, causing late-night panic and missed deadlines.
 - **Innovation:** Feasibility-first planning with deterministic, explainable trade-offs (**Protect**, **Reduce**, **Defer**).
-- **Development Timeline:** The project and repository were created on **October 1, 2026** (first commit `445c218`), fully within the official EurekaDEV 2026 competition window (September 27 – October 21, 2026).
+- **Development Timeline:** The project and repository were created on **October 1, 2026** (first commit `445c218`), fully within the official EurekaDEV 2026 competition window (September 27 – October 20, 2026).
 - **AI-Assisted Coding Disclosure:** AI tools were used as engineering accelerators for DOM scaffolding, styling, and test generation. **Crucially, zero AI participates in planning decisions**: all scheduling, capacity arithmetic, and sacrifice trade-offs are 100% deterministic, explainable, and reproducible algorithms.
 
 ## Key Capabilities
