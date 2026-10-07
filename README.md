@@ -58,11 +58,11 @@ Open `index.html` in a browser, or serve the folder: `python3 -m http.server 808
 npm test        # Node 18+, no extra installs required
 ```
 
-The test suite runs 124 deterministic assertions across 4 suites with 0 failures:
+The test suite runs 127 deterministic assertions across 4 suites with 0 failures:
 - `tests/triage-engine.test.js` (57 tests): engine unit, golden-scenario and property tests (4000 random states checked against hard invariants).
 - `tests/ui.test.js` (19 tests): runs the real script of `index.html` on a minimal fake DOM and checks every decision it displays.
 - `tests/input.test.js` (36 tests): task input, validation, replanning on user data, XSS, and 40 random session fuzzing loops.
-- `tests/product-system.test.js` (12 tests): validates Planning Horizon, Buffer diagnosis, Scenario comparisons, JSON export/import schema, prototype pollution protection, and clean schedule formatting.
+- `tests/product-system.test.js` (15 tests): validates Planning Horizon, Buffer diagnosis, Scenario comparisons, JSON export/import schema, prototype pollution protection, and clean schedule formatting.
 
 The UI tests do not render CSS or layout; check responsive layout in a real browser.
 

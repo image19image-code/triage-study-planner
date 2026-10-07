@@ -7,12 +7,12 @@
 <meta name="description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
 <meta property="og:title" content="Triage: The study planner that tells the truth">
 <meta property="og:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
-<meta property="og:image" content="/triage-og.svg">
+<meta property="og:image" content="/triage-study-planner/triage-og.svg">
 <meta property="og:image:alt" content="Triage study planner showing 10h needed, 8h available, short by 2h">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Triage: The study planner that tells the truth">
 <meta name="twitter:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
-<meta name="twitter:image" content="/triage-og.svg">
+<meta name="twitter:image" content="/triage-study-planner/triage-og.svg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%2316171a'/%3E%3Cpath%20d='M18%2021h28M32%2021v27'%20stroke='%23f6f5f1'%20stroke-width='7'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E">
 <style>
 /* ---- Triage Design System: Editorial, Honest, Deterministic ---- */
@@ -400,9 +400,10 @@ details.assumptions p { max-width: 58em; margin: var(--s2) 0 0; line-height: 1.5
   align-items: center;
   justify-content: space-between;
   gap: var(--s3);
-  margin: 0 0 var(--s5);
-  padding: 14px 18px;
+  margin: 0 0 var(--s4);
+  padding: 12px 18px;
   border: 1px solid var(--line);
+  border-left: 4px solid var(--focus);
   border-radius: var(--r2);
   background: var(--surface-raised);
   box-shadow: var(--shadow-sm);
@@ -1157,30 +1158,41 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
   .grp .hint { flex-basis: 100%; margin-left: 12px; }
 }
 
-/* Final polish pass: one calm visual language from input to replan. */
+/* Final polish pass: tight, commanding first viewport with immediate reality check */
 .top-bar {
-  margin-bottom: var(--s5);
+  margin-bottom: var(--s2);
 }
 .brand-pill {
-  padding: 6px 12px;
-  background: color-mix(in srgb, var(--surface) 82%, var(--tint));
+  padding: 5px 12px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--tint));
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-color: var(--line);
 }
 .hero {
-  padding-bottom: var(--s5);
-  margin-bottom: var(--s6);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s2);
 }
 .hero-mark { color: var(--focus); }
-.lead0 { max-width: 36em; }
-.hero-actions { margin: var(--s5) 0 var(--s4); }
-.hero-cta { border-radius: 10px; }
-.truth-contrast { margin-top: var(--s5); }
-.pillars { margin-top: var(--s4); }
+.hero h1 {
+  font-size: clamp(34px, 6vw, 48px);
+  line-height: 1.04;
+}
+.hero .tagline {
+  font-size: clamp(16px, 2.6vw, 20px);
+  margin-top: 2px;
+}
+.lead0 { max-width: 36em; font-size: 13.5px; margin-top: 4px; }
+.hero-actions { margin: var(--s2) 0 var(--s2); gap: var(--s3); }
+.hero-cta { border-radius: var(--r1); min-height: 38px; }
+.hero-secondary { min-height: 38px; }
+.hero-proof { margin-top: 4px; font-size: 12px; color: var(--ink3); }
+.truth-contrast { margin-top: var(--s4); }
+.pillars { margin-top: var(--s3); }
 .pillar-card { min-height: 142px; }
 .legend { padding-top: var(--s3); }
-h2 { margin-top: var(--s7); }
+h2 { margin-top: var(--s6); }
 .card { border-radius: var(--r2); }
 #tasks.card { padding: var(--s4); }
 .entry { background: var(--surface-raised); }
@@ -1196,8 +1208,8 @@ button.primary {
   min-height: 48px;
   border-radius: 10px;
 }
-#useOwn { margin-top: var(--s4) !important; }
-.status { margin-top: var(--s6); }
+#useOwn { margin-top: var(--s3) !important; }
+.status { margin-top: var(--s2); margin-bottom: var(--s3); }
 .status .lead { max-width: 38em; }
 .nums > div { min-height: 72px; }
 .dc { border-radius: var(--r1); }
@@ -1231,6 +1243,17 @@ button.primary {
   display: block;
   margin-bottom: var(--s2);
   color: var(--focus);
+  font: 800 11px/1 var(--sans);
+  letter-spacing: 0.18em;
+}
+#rest > h2#behindHeading {
+  margin-top: var(--s6);
+}
+#rest > h2#behindHeading::before {
+  content: "RECOVERY";
+  display: block;
+  margin-bottom: var(--s2);
+  color: var(--amber);
   font: 800 11px/1 var(--sans);
   letter-spacing: 0.18em;
 }
@@ -1286,9 +1309,22 @@ button.primary {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 2px 10px;
+  margin-bottom: var(--s3);
+}
+.nav-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
-  padding: 4px 2px 12px;
-  margin-bottom: var(--s4);
+}
+.nav-divider {
+  display: inline-block;
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 4px;
 }
 .nav-tab {
   display: inline-flex;
@@ -1309,11 +1345,44 @@ button.primary {
   color: var(--ink);
   border-color: var(--ink3);
 }
+.nav-tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
 .nav-tab.active {
   background: var(--ink);
   color: var(--surface);
   border-color: var(--ink);
   box-shadow: var(--shadow-sm);
+}
+.nav-tab.nav-tab-util {
+  background: transparent;
+  border: 1px dashed var(--line);
+  color: var(--ink3);
+  font-weight: 500;
+  font-size: 12.5px;
+  padding: 5px 12px;
+}
+.nav-tab.nav-tab-util:hover {
+  background: var(--tint);
+  border-color: var(--ink2);
+  color: var(--ink);
+}
+.horizon-panel h2::before {
+  content: "HORIZON";
+  display: block;
+  margin-bottom: var(--s2);
+  color: var(--focus);
+  font: 800 11px/1 var(--sans);
+  letter-spacing: 0.18em;
+}
+#whatif .wi-t::before {
+  content: "SIMULATION";
+  display: block;
+  margin-bottom: var(--s2);
+  color: var(--ink3);
+  font: 800 11px/1 var(--sans);
+  letter-spacing: 0.18em;
 }
 
 /* Today Focus Dashboard */
@@ -1636,14 +1705,19 @@ button.primary {
     </div>
   </div>
   <nav class="app-nav" aria-label="Section navigation">
-    <a href="#status" class="nav-tab">Reality Check</a>
-    <a href="#triage" class="nav-tab">Triage Decisions</a>
-    <a href="#planTitle" class="nav-tab">Today’s Action</a>
-    <a href="#horizonCard" class="nav-tab">Planning Horizon</a>
-    <a href="#behind" class="nav-tab">Recovery</a>
-    <a href="#whatif" class="nav-tab">What-If Lab</a>
-    <a href="#tt" class="nav-tab"><span id="navTasksLabel">Work Queue</span></a>
-    <a href="#dataPanel" class="nav-tab">Data &amp; Backup</a>
+    <div class="nav-group nav-journey" role="group" aria-label="Core workflow">
+      <a href="#status" class="nav-tab">Reality Check</a>
+      <a href="#triage" class="nav-tab">Triage Decisions</a>
+      <a href="#planTitle" class="nav-tab">Today’s Action</a>
+      <a href="#horizonCard" class="nav-tab">Planning Horizon</a>
+      <a href="#behind" class="nav-tab">Recovery</a>
+      <a href="#whatif" class="nav-tab">What-If Lab</a>
+    </div>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <div class="nav-group nav-utilities" role="group" aria-label="Utilities">
+      <a href="#tt" class="nav-tab nav-tab-util"><span id="navTasksLabel">Work Queue</span></a>
+      <a href="#dataPanel" class="nav-tab nav-tab-util">Data &amp; Backup</a>
+    </div>
   </nav>
   <div id="modeBanner"></div>
   <header class="hero">
@@ -1670,7 +1744,7 @@ button.primary {
     <div id="todayCard"></div>
     <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
     <div id="horizonCard"></div>
-    <h2>If you fall behind</h2><div id="behind"></div>
+    <h2 id="behindHeading">If you fall behind</h2><div id="behind"></div>
     <div id="changes"></div>
     <div class="card wi" id="whatif">
       <div class="wi-t">What if study time changed?</div>
