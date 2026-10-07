@@ -1237,10 +1237,99 @@ button.primary {
   .entry { padding: var(--s3); }
   .preset-chip { max-width: 100%; white-space: normal; text-align: left; }
 }
-@media (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-}
-</style>
+  }
+
+  /* Verdict-first composition: the result earns the first viewport. */
+  .top-bar { margin-bottom: var(--s2); }
+  .hero {
+    padding: 0 0 var(--s3);
+    margin-bottom: var(--s3);
+    border-bottom: 0;
+  }
+  h1 { font-size: clamp(42px, 7vw, 56px); }
+  .hero-mark { margin-bottom: 2px; }
+  .tagline { margin-top: 2px; font-size: clamp(18px, 3vw, 23px); }
+  .lead0 { margin: 4px 0 0; max-width: 34em; font-size: 14px; line-height: 1.35; }
+  .hero-actions { margin: var(--s2) 0 0; }
+  .hero-cta { min-height: 38px; padding: 7px 14px; }
+  #status { scroll-margin-top: 16px; }
+  .status {
+    margin-bottom: var(--s3);
+    padding: var(--s4) var(--s5) var(--s5);
+    border-radius: var(--r2);
+  }
+  .status .big {
+    margin: var(--s2) 0 var(--s1);
+    font-size: clamp(42px, 8vw, 62px);
+    letter-spacing: -0.045em;
+  }
+  .status .lead { font-size: 15px; }
+  @media (min-width: 621px) {
+    .status .lead { display: none; }
+    .status .bar-label { margin-top: var(--s3); }
+    .status .bar { margin-top: var(--s2); }
+  }
+  .status .bar-label { margin-top: var(--s4); }
+  .status .bar { margin: var(--s3) 0 var(--s2); }
+  .status .nums { margin-top: var(--s4); padding-top: var(--s3); gap: var(--s2); }
+  .status .nums > div { padding: 12px 14px; }
+  .status .nums b { font-size: clamp(26px, 5vw, 38px); }
+  .decision-ribbon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    margin: 0 0 var(--s5);
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r2);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-sm);
+  }
+  .decision-label {
+    color: var(--ink3);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .decision-flow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font: 700 18px/1 var(--serif);
+    white-space: nowrap;
+  }
+  .decision-flow span { color: var(--ink3); font: 600 15px var(--sans); }
+  .flow-protect { color: var(--green); }
+  .flow-reduce { color: var(--amber); }
+  .flow-defer { color: var(--ink2); }
+  .why-link {
+    color: var(--focus);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .why-link:hover { text-decoration: underline; }
+  @media (max-width: 620px) {
+    .decision-ribbon { align-items: flex-start; flex-direction: column; gap: 9px; padding: 14px 16px; }
+    .decision-flow { font-size: 21px; }
+    .why-link { font-size: 13px; }
+  }
+  @media (max-width: 420px) {
+    .hero { padding-top: 0; }
+    .hero-actions { margin-top: var(--s2); }
+    .hero-actions .mut { display: none; }
+    .status { padding: var(--s3) var(--s3) var(--s4); }
+    .status .big { font-size: clamp(34px, 11vw, 48px); }
+    .status .nums > div { padding: 10px 11px; }
+    .status .nums b { font-size: 26px; }
+  }
+  </style>
 </head>
 <body>
 <a href="#status" class="skip-link">Skip to reality check</a>
@@ -1255,42 +1344,19 @@ button.primary {
     <span class="hero-mark">Triage Study Planner</span>
     <h1>Triage</h1>
     <p class="tagline">Study planner that tells the truth.</p>
-    <p class="lead0">Most planners accept impossible plans and set you up to fail. Triage checks physical reality first: it calculates whether your workload fits and decides what to protect, reduce, and defer.</p>
+    <p class="lead0">The planner that tells you what realistically fits.</p>
     <div class="hero-actions">
       <a class="hero-cta" href="#tt">Start with your tasks <span aria-hidden="true">↓</span></a>
-      <span class="mut">Plan against the time you actually have.</span>
+      <span class="mut">Workload → capacity → a plan you can keep.</span>
     </div>
-    <div class="truth-contrast" role="region" aria-label="Why Triage exists">
-      <div class="contrast-col illusion">
-        <span class="contrast-badge">Traditional Planners</span>
-        <p>Accept whatever you type. Let you schedule 14h of work into an 8h day, leading to late-night panic and guaranteed failure.</p>
-      </div>
-      <div class="contrast-col truth">
-        <span class="contrast-badge">Triage Reality Law</span>
-        <p>Calculates physical reality first. Decides what to <b>Protect</b>, what to <b>Reduce</b>, and what to <b>Defer</b> so your plan actually works.</p>
-      </div>
-    </div>
-    <div class="pillars" role="region" aria-label="Triage Decision System">
-      <div class="pillar-card p-keep">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
-        <strong>Protect</strong>
-        <p>Crucial work &amp; importance 5 are guarded in full.</p>
-      </div>
-      <div class="pillar-card p-red">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/></svg></div>
-        <strong>Reduce</strong>
-        <p>Flexible tasks are trimmed to realistic bounds.</p>
-      </div>
-      <div class="pillar-card p-def">
-        <div class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-        <strong>Defer</strong>
-        <p>Excess work is postponed to preserve what fits.</p>
-      </div>
-    </div>
-    <div class="legend" role="group" aria-label="Colour key"><span><span class="k keep"></span>Protect</span><span><span class="k red"></span>Reduce</span><span><span class="k def"></span>Defer</span><span><span class="k gap"></span>Not enough time</span></div>
   </header>
   <div class="sr" id="announce" aria-live="polite"></div>
   <div id="status" tabindex="-1"></div>
+  <section class="decision-ribbon" aria-label="Triage decisions">
+    <span class="decision-label">Then Triage decides</span>
+    <div class="decision-flow"><b class="flow-protect">Protect</b><span aria-hidden="true">→</span><b class="flow-reduce">Reduce</b><span aria-hidden="true">→</span><b class="flow-defer">Defer</b></div>
+    <a class="why-link" href="#triage">See why each task landed there <span aria-hidden="true">↓</span></a>
+  </section>
   <div class="card wi" id="whatif">
     <div class="wi-t">What if your time changed?</div>
     <p class="mut" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.</p>
