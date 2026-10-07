@@ -1329,6 +1329,65 @@ button.primary {
     .status .nums > div { padding: 10px 11px; }
     .status .nums b { font-size: 26px; }
   }
+  /* ---- Hierarchy pass: Reality → Triage → Action → Horizon → Recovery → Simulation ---- */
+  .status {
+    margin-top: var(--s5);
+    padding: clamp(24px, 5vw, 42px);
+    border-radius: 0;
+    border-width: 1px 0;
+    box-shadow: none;
+  }
+  .status .eyebrow { letter-spacing: 0.16em; }
+  .status .big { font-size: clamp(42px, 8vw, 72px); letter-spacing: -0.045em; }
+  .status .lead { max-width: 38em; font-size: 17px; }
+  .decision-ribbon {
+    margin: var(--s6) 0 var(--s7);
+    padding: var(--s4) 0;
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+  }
+  .decision-label { text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; font-weight: 800; color: var(--ink3); }
+  .decision-flow { font: 700 clamp(24px, 5vw, 38px)/1.1 var(--serif); letter-spacing: -0.025em; }
+  .why-link { font-size: 13px; }
+  h2 {
+    margin-top: var(--s7);
+    padding-top: var(--s4);
+    border-top: 1px solid var(--line);
+    font-size: clamp(25px, 5vw, 34px);
+    letter-spacing: -0.025em;
+  }
+  #status + .decision-ribbon + .wi { margin-top: var(--s6); }
+  #whatif {
+    margin: var(--s7) 0 var(--s5);
+    padding: var(--s4) 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .wi-t { font: 700 17px/1.2 var(--sans); text-transform: uppercase; letter-spacing: 0.1em; }
+  #tasks { box-shadow: none; border-radius: 0; border-width: 1px 0; background: transparent; }
+  #triage { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
+  #blocks { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
+  #rest > h2:first-child { margin-top: var(--s7); border-top: 2px solid var(--ink); }
+  #rest > h2:first-child::before { content: "TRIAGE"; display: block; margin-bottom: var(--s2); color: var(--green); font: 800 11px/1 var(--sans); letter-spacing: 0.18em; }
+  #rest > h2:nth-of-type(2)::before { content: "HORIZON"; display: block; margin-bottom: var(--s2); color: var(--ink3); font: 800 11px/1 var(--sans); letter-spacing: 0.18em; }
+  #rest > h2:nth-of-type(3)::before { content: "RECOVERY"; display: block; margin-bottom: var(--s2); color: var(--amber); font: 800 11px/1 var(--sans); letter-spacing: 0.18em; }
+  .zone { margin-bottom: var(--s6); }
+  .grp { margin-bottom: var(--s4); font-size: 22px; }
+  .dc { box-shadow: none; border-radius: 0; border-width: 1px 0 0 4px; padding: 16px 12px 16px 18px; }
+  .rec { border-radius: 0; box-shadow: none; border-width: 1px 0; background: var(--amber-bg); }
+  .foot { margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  @media (max-width: 560px) {
+    .status { margin-left: -var(--s4); margin-right: -var(--s4); padding: 24px var(--s4); }
+    .decision-ribbon { margin-top: var(--s5); }
+    .decision-flow { gap: 7px; }
+    h2 { margin-top: var(--s6); }
+  }
   </style>
 </head>
 <body>
@@ -1358,14 +1417,14 @@ button.primary {
     <a class="why-link" href="#triage">See why each task landed there <span aria-hidden="true">↓</span></a>
   </section>
   <div class="card wi" id="whatif">
-    <div class="wi-t">What if your time changed?</div>
+    <div class="wi-t">WHAT-IF · Change your time</div>
     <p class="mut" style="margin:-4px 0 var(--s3);font-size:13px;line-height:1.45">Simulate how adjusting your daily study time reshapes your Protect, Reduce, and Defer decisions without changing your real baseline plan.</p>
     <div class="wi-row"><button type="button" id="wiMinus" aria-label="15 minutes less on every study day">−15 min/day</button><span class="wi-val" id="wiLabel"></span><button type="button" id="wiPlus" aria-label="15 minutes more on every study day">+15 min/day</button></div>
     <button type="button" class="back" id="wiBack" hidden>Back to real time</button>
   </div>
   <div id="empty" class="card empty" hidden><b>Nothing planned yet</b>Add your tasks below, enter your study time, then press PLAN MY TIME.</div>
 
-  <h2 id="tt">Your tasks <span id="taskCount" class="count"></span></h2>
+  <h2 id="tt">TASKS <span id="taskCount" class="count"></span></h2>
   <div class="card" id="tasks">
     <div id="taskList"></div>
     <div id="demoNote" class="mut" style="margin-top:12px"></div>
@@ -1400,9 +1459,9 @@ button.primary {
   </div>
 
   <div id="rest">
-    <h2>Triage</h2><div class="card" id="triage"></div>
-    <h2 id="planTitle">Plan</h2><div class="card" id="blocks"></div>
-    <h2>If you fall behind</h2><div id="behind"></div>
+    <h2>Decisions</h2><div class="card" id="triage"></div>
+    <h2 id="planTitle">Today’s action</h2><div class="card" id="blocks"></div>
+    <h2>I fell behind</h2><div id="behind"></div>
     <div id="changes"></div>
   </div>
   <div class="foot"><button type="button" id="reset">Reset demo</button><span>Every decision comes from a deterministic engine. No AI makes them.</span></div>
