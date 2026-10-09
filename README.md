@@ -58,11 +58,11 @@ Open `index.html` in a browser, or serve the folder: `python3 -m http.server 808
 npm test        # Node 18+, no extra installs required
 ```
 
-The test suite runs 127 deterministic assertions across 4 suites with 0 failures:
+The test suite runs 130 deterministic assertions across 4 suites with 0 failures:
 - `tests/triage-engine.test.js` (57 tests): engine unit, golden-scenario and property tests (4000 random states checked against hard invariants).
 - `tests/ui.test.js` (19 tests): runs the real script of `index.html` on a minimal fake DOM and checks every decision it displays.
 - `tests/input.test.js` (36 tests): task input, validation, replanning on user data, XSS, and 40 random session fuzzing loops.
-- `tests/product-system.test.js` (15 tests): validates Planning Horizon, Buffer diagnosis, Scenario comparisons, JSON export/import schema, prototype pollution protection, and clean schedule formatting.
+- `tests/product-system.test.js` (18 tests): validates Planning Horizon, Buffer diagnosis, Scenario comparisons, JSON export/import schema, prototype pollution protection, clean schedule formatting, repeated multi-day recovery cycles, and progress persistence.
 
 The UI tests do not render CSS or layout; check responsive layout in a real browser.
 
@@ -74,13 +74,16 @@ Task names and imported data are untrusted text. Every value that reaches the pa
 
 Labelled fields, keyboard entry (Enter adds a task), visible focus, errors that move focus to the first wrong field, modal focus trapping with Escape key dismissal and focus restoration, screen-reader announcements for plan results, `prefers-reduced-motion` support, and colour pairs that meet 4.5:1 contrast in light and dark themes (computed, not eyeballed). Meaning never relies on colour alone: every decision also has a text label.
 
-## Competition Context (EurekaDEV 2026)
+## Hackathon & Business Context (Next Founders Hackathon · October 15, 2026)
 
-- **Track:** Coding Track (Computer Science + AI)
-- **Problem Statement:** Students routinely fall into the "wishful scheduling" trap—traditional planners accept 14 hours of tasks into an 8-hour day, causing late-night panic and missed deadlines.
-- **Innovation:** Feasibility-first planning with deterministic, explainable trade-offs (**Protect**, **Reduce**, **Defer**).
-- **Development Timeline:** The project and repository were created on **October 1, 2026** (first commit `445c218`), fully within the official EurekaDEV 2026 competition window (September 27 – October 20, 2026).
-- **AI-Assisted Coding Disclosure:** AI tools were used as engineering accelerators for DOM scaffolding, styling, and test generation. **Crucially, zero AI participates in planning decisions**: all scheduling, capacity arithmetic, and sacrifice trade-offs are 100% deterministic, explainable, and reproducible algorithms.
+- **Target Audience:** College and high school students juggling overlapping course deadlines, exam periods, and extracurricular commitments.
+- **Problem Statement:** Conventional planners (calendars, to-do lists, kanban boards) assume infinite time. They happily let students schedule 14 hours of work into an 8-hour day, guaranteeing failure, burnout, and late-night panic.
+- **Core Value Proposition:** Triage tells the truth upfront. It calculates mathematical feasibility before scheduling, deterministically protects critical work, trims flexible assignments, defers the rest, and seamlessly recovers when sessions slip.
+- **Product Differentiation:** Zero AI slop, zero black-box recommendations, zero hallucinations. Deterministic arithmetic with human-readable "Why?" explanations. The student understands every trade-off.
+- **Business Model Hypothesis (Explicitly Unvalidated Roadmap):**
+  - **Triage Core (Current):** Free forever. Fast, private, client-side, zero accounts, zero telemetry.
+  - **Triage Pro (Planned Future):** Optional paid tier for power students: Google/Apple Calendar bi-directional sync, syllabus OCR/PDF import, and custom study window profiles.
+  - **Triage Campus (Planned Future):** B2B institutional licenses for universities, academic advisors, and learning disability support centers to detect and balance cohort-level crunch weeks across faculties.
 
 ## Key Capabilities
 
@@ -91,12 +94,11 @@ Labelled fields, keyboard entry (Enter adds a task), visible focus, errors that 
 | **Today Focus** | Clear primary action answering "What should I do next?" with session times and progress recording. |
 | **Planning Horizon** | Visualizes daily capacity, scheduled blocks, and breathing room (flex/slack) across the upcoming week. |
 | **What-If Simulation** | Test capacity scenarios (±15 to ±30 min/day) in real time without mutating your real baseline plan. |
-| **Recovery ("I Fell Behind")** | Calm, shame-free replanning: enter the minutes you actually completed, and Triage rebuilds the rest from scratch. |
-| **Local-First & Private** | Zero accounts, zero cloud sync, zero tracking. Auto-saves in browser localStorage with JSON export/import and Print/PDF backup. |
+| **Recovery & Multi-Day Replanning** | Calm, shame-free replanning: enter actual completed minutes, rebuild remaining work, adjust entries without double-counting, and advance across successive days. |
+| **Local-First & Private** | Zero accounts, zero cloud sync, zero tracking. Auto-saves in browser localStorage with progress persistence, JSON export/import, and Print/PDF backup. |
 
 ## Known limitations
 
 - One available-minutes value is applied to every day in the input form (though the underlying engine supports arbitrary per-day capacity arrays).
-- After a REPLAN you cannot start a second REPLAN for the next day.
-- Free minutes shorter than 15 in a day count as capacity but cannot form a session.
+- Free minutes shorter than 15 in a day count as capacity but cannot form a session (conservative floor prevents unusable fragments).
 - The planning window (15:00–22:00) and the 50% reduction limit are product settings, not mathematical facts.

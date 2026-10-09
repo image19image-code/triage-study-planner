@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Triage: Study Planner</title>
 <meta name="description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
-<meta property="og:title" content="Triage: The study planner that tells the truth">
-<meta property="og:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta property="og:title" content="Triage: Study Planner">
+<meta property="og:description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
 <meta property="og:image" content="/triage-study-planner/triage-og.svg">
 <meta property="og:image:alt" content="Triage study planner showing 10h needed, 8h available, short by 2h">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Triage: The study planner that tells the truth">
-<meta name="twitter:description" content="10h needed. 8h available. Short by 2h. Triage turns the gap into a plan.">
+<meta name="twitter:title" content="Triage: Study Planner">
+<meta name="twitter:description" content="Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.">
 <meta name="twitter:image" content="/triage-study-planner/triage-og.svg">
   <meta name="google-site-verification" content="Cm5gSesYViOGKsyMcc1J9YFBBarvMRi7vqWIxxmRuEU" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%2316171a'/%3E%3Cpath%20d='M18%2021h28M32%2021v27'%20stroke='%23f6f5f1'%20stroke-width='7'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E">
@@ -1722,15 +1722,25 @@ button.primary {
   </nav>
   <div id="modeBanner"></div>
   <header class="hero">
-    <span class="hero-mark">Triage Study Planner</span>
+    <span class="hero-mark">Triage Study Planner · Deterministic Feasibility Engine</span>
     <h1>Triage</h1>
-    <p class="tagline">Study planner that tells the truth.</p>
-    <p class="lead0">The planner that tells you what realistically fits.</p>
+    <p class="tagline">The study planner that tells the truth.</p>
+    <p class="lead0">Triage does not just schedule your work. When time runs short, it helps you make realistic decisions: <strong>Protect</strong> high-stakes exams, <strong>Reduce</strong> flexible assignments, and <strong>Defer</strong> non-urgent work.</p>
+    <div class="truth-contrast" role="region" aria-label="Why conventional planners fail vs Triage">
+      <div class="contrast-col illusion">
+        <span class="contrast-badge">Conventional Planners</span>
+        <p>Accepts impossible workloads without warning. Squeezes 10 hours into 8 hours, causing late-night panic and collapse the moment a session slips.</p>
+      </div>
+      <div class="contrast-col truth">
+        <span class="contrast-badge">Triage Reality Engine</span>
+        <p>Flags the exact 2h shortage upfront. Deterministically protects what matters, trims what flexes, and recalculates shame-free when plans slip.</p>
+      </div>
+    </div>
     <div class="hero-actions">
-      <a class="hero-cta" id="heroCta" href="#status">See what fits <span aria-hidden="true">↓</span></a>
+      <a class="hero-cta" id="heroCta" href="#status">See what fits <span aria-hidden="true">&darr;</span></a>
       <a class="hero-secondary" href="#tt">Plan with my own tasks</a>
     </div>
-    <p class="hero-proof">Workload → capacity → a plan you can keep.</p>
+    <p class="hero-proof">Built for students juggling overlapping assignments, exams, and finite study hours.</p>
   </header>
   <div class="sr" id="announce" aria-live="polite"></div>
   <div id="status" tabindex="-1"></div>
@@ -2037,11 +2047,64 @@ function renderBlocks() {
 }
 
 // ---- Recovery mode ----
+function advanceToNextDay() {
+  const d = planDay();
+  if (d === null) return;
+  const daysToAdvance = Math.max(1, d);
+  S.capacity = S.capacity.slice(daysToAdvance);
+  if (S.capacity.length === 0) {
+    const av = $('tAvail') ? Number($('tAvail').value) || 120 : 120;
+    S.capacity = [av];
+  }
+  S.tasks.forEach((t) => {
+    t.deadlineDay = t.deadlineDay - daysToAdvance;
+  });
+  if (mode === 'user') {
+    draft.forEach((t) => {
+      t.days = Math.max(0, t.days - daysToAdvance);
+    });
+  }
+  S.now = 900;
+  whatIf = 0;
+  prev = R;
+  lastDone = {};
+  flash = true;
+  recompute();
+  render();
+  $('announce').textContent = 'Started session for ' + dayName(0) + '. ' + headText + '.';
+}
+
+function adjustToday() {
+  if (!prev) return;
+  Object.keys(lastDone).forEach((id) => {
+    const t = S.tasks.find((x) => x.id === id);
+    if (t) t.completed = Math.max(0, t.completed - (lastDone[id] || 0));
+  });
+  S.now = 900;
+  recompute();
+  renderBehind(true);
+}
+
 function renderBehind(open) {
   if (whatIf !== 0) { $('behind').innerHTML = '<div class="card mut">This is a what-if, not your real plan. Go back to real time to record what actually happened.</div>'; return; }
   const d = planDay();
   const demoMode = mode === 'demo';
-  if (d !== 0) { $('behind').innerHTML = '<div class="card mut">' + (prev && d !== null ? 'Plan rebuilt from what you actually did. Your next session is ' + dayName(d).toLowerCase() + '.' : (demoMode ? 'Nothing is scheduled for today in this sample. Come back when a session is due.' : 'Nothing is planned for today. Come back when a session is due.')) + '</div>'; return; }
+  if (d !== 0) {
+    if (prev && d !== null) {
+      $('behind').innerHTML = '<div class="card mut">' +
+        '<p style="margin:0 0 12px">Plan rebuilt from what you actually did. Your next session is ' + dayName(d).toLowerCase() + '.</p>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button type="button" class="btn-sm primary" id="btnAdvanceDay">Start next session (' + dayName(d) + ') &rarr;</button>' +
+          '<button type="button" class="btn-sm" id="btnAdjustToday">Adjust today\'s recorded progress</button>' +
+        '</div>' +
+      '</div>';
+      if ($('btnAdvanceDay')) $('btnAdvanceDay').onclick = advanceToNextDay;
+      if ($('btnAdjustToday')) $('btnAdjustToday').onclick = adjustToday;
+      return;
+    }
+    $('behind').innerHTML = '<div class="card mut">' + (demoMode ? 'Nothing is scheduled for today in this sample. Come back when a session is due.' : 'Nothing is planned for today. Come back when a session is due.') + '</div>';
+    return;
+  }
   if (!open) {
     const kicker = demoMode ? 'Recovery mode · Example demonstration' : 'Recovery mode';
     const desc = demoMode ? 'Plans slip. That is expected. Try the recovery flow on this sample plan: simulate what happens when study sessions slip, and watch Triage rebuild the plan.' : 'Plans slip. That is expected. Tell Triage what actually happened and it rebuilds the rest of the plan. No penalty, no starting over.';
@@ -2052,10 +2115,21 @@ function renderBehind(open) {
   const title = demoMode ? 'Simulate what happened today' : 'What actually happened today?';
   const desc = demoMode ? 'Enter the minutes completed for each block in this example. Triage will protect essential work and rebuild what remains.' : 'Enter the minutes you really worked on each block. Triage will protect the important work and rebuild what remains.';
   const plannedMin = {}; R.blocks.filter((b) => b.day === 0).forEach((b) => { plannedMin[b.taskId] = (plannedMin[b.taskId] || 0) + b.minutes; });
-  $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">' + kicker + '</div><div class="rec-t">' + title + '</div><div class="mut">' + desc + '</div>' + Object.keys(plannedMin).map((id) =>
-    '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + plannedMin[id] + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>').join('') +
-    '<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><button type="button" class="primary" id="rp">REPLAN</button><button type="button" class="btn-sm" id="btnCancelBehind">Cancel</button></div></div>';
-  if ($('btnCancelBehind')) $('btnCancelBehind').onclick = () => renderBehind(false);
+  $('behind').innerHTML = '<div class="rec"><div class="rec-kicker">' + kicker + '</div><div class="rec-t">' + title + '</div><div class="mut">' + desc + '</div>' + Object.keys(plannedMin).map((id) => {
+    const val = lastDone[id] !== undefined ? lastDone[id] : plannedMin[id];
+    return '<div class="fr"><span>' + esc(nm(id)) + '<span class="mut"> planned ' + plannedMin[id] + ' min</span></span><span><input type="number" min="0" max="999" value="' + val + '" data-id="' + esc(id) + '" aria-label="Minutes actually done: ' + esc(nm(id)) + '"> min</span></div>';
+  }).join('') +
+  '<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><button type="button" class="primary" id="rp">REPLAN</button><button type="button" class="btn-sm" id="btnCancelBehind">Cancel</button></div></div>';
+  if ($('btnCancelBehind')) $('btnCancelBehind').onclick = () => {
+    if (prev && S.now === 900 && Object.keys(lastDone).length) {
+      Object.keys(lastDone).forEach((id) => { const t = S.tasks.find((x) => x.id === id); if (t) t.completed += (lastDone[id] || 0); });
+      S.now = 1320;
+      recompute();
+      render();
+    } else {
+      renderBehind(false);
+    }
+  };
   $('rp').onclick = () => {
     const before = R, done = {};
     document.querySelectorAll('#behind input').forEach((i) => { const t = S.tasks.find((x) => x.id === i.dataset.id); const add = Math.max(0, Math.round(+i.value || 0)); t.completed += add; done[i.dataset.id] = add; });
@@ -2117,7 +2191,12 @@ function renderTodayCard() {
   const demoMode = mode === 'demo';
   const d0Blocks = R.blocks.filter((b) => b.day === 0);
   if (d0Blocks.length === 0) {
-    el.innerHTML = '<div class="today-panel"><div class="today-head"><span class="today-title">' + (demoMode ? 'Today\'s Focus · Example Session' : 'Today\'s Focus') + '</span><span class="tag">Ahead / Resting</span></div><p class="mut" style="margin:0">' + (demoMode ? 'No study blocks are scheduled for today in this sample workload. Next planned session starts tomorrow.' : 'No study blocks are scheduled for today. You are either caught up or your next planned session starts tomorrow.') + '</p></div>';
+    const nextD = planDay();
+    const hasNext = prev && nextD !== null;
+    el.innerHTML = '<div class="today-panel"><div class="today-head"><span class="today-title">' + (demoMode ? 'Today\'s Focus · Example Session' : 'Today\'s Focus') + '</span><span class="tag">Ahead / Resting</span></div><p class="mut" style="margin:0">' + (demoMode ? 'No study blocks are scheduled for today in this sample workload. Next planned session starts tomorrow.' : 'No study blocks are scheduled for today. You are either caught up or your next planned session starts tomorrow.') + '</p>' +
+      (hasNext ? '<div style="margin-top:12px"><button type="button" class="btn-sm primary" id="btnTodayAdvance">Start next session (' + dayName(nextD) + ') &rarr;</button></div>' : '') +
+      '</div>';
+    if ($('btnTodayAdvance')) $('btnTodayAdvance').onclick = advanceToNextDay;
     return;
   }
   const firstBlock = d0Blocks[0];
@@ -2224,6 +2303,12 @@ function renderDataPanel() {
       '<button type="button" class="btn-sm" id="btnClearSaved">Clear Saved Plan</button>' +
     '</div>' +
     '<div class="storage-status"><span class="storage-dot"></span><span>Local-First · ' + (demoMode ? 'Showing built-in sample' : 'Auto-saved in browser') + '</span></div>' +
+    '<div style="margin-top:var(--s4);padding-top:var(--s3);border-top:1px dashed var(--line);font-size:12.5px;color:var(--ink2);line-height:1.5">' +
+      '<div style="font-weight:700;color:var(--ink);margin-bottom:4px">Business Model &amp; Roadmap (Planned):</div>' +
+      '<div>• <b>Triage Core</b>: Free forever for students. Deterministic, local-first, zero tracking.</div>' +
+      '<div>• <b>Triage Pro (Planned)</b>: Optional power features (calendar sync, custom study windows, syllabus import).</div>' +
+      '<div>• <b>Triage Campus (Planned)</b>: Workload balance intelligence for universities to detect exam clustering before crunch week.</div>' +
+    '</div>' +
   '</div>';
 
   if ($('btnExportJson')) $('btnExportJson').onclick = showExportModal;
@@ -2238,10 +2323,15 @@ function saveToStorage() {
   if (typeof localStorage === 'undefined') return;
   try {
     if (mode === 'user' && (draft.length > 0 || planned)) {
+      const completedMap = {};
+      if (S && Array.isArray(S.tasks)) {
+        S.tasks.forEach((t) => { if (t.completed > 0) completedMap[t.id] = t.completed; });
+      }
       const payload = {
         mode,
         draft,
         available: $('tAvail') ? $('tAvail').value : '120',
+        completedMap,
         savedAt: Date.now(),
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -2285,6 +2375,14 @@ function loadFromStorage() {
       const a = TaskInput.validateAvailable(avVal);
       if (a.ok) {
         S = TaskInput.buildState(draft, a.value);
+        if (data.completedMap && typeof data.completedMap === 'object') {
+          S.tasks.forEach((t) => {
+            const comp = data.completedMap[t.id];
+            if (Number.isInteger(comp) && comp > 0) {
+              t.completed = Math.min(t.estimate, comp);
+            }
+          });
+        }
         planned = true;
         recompute();
       }

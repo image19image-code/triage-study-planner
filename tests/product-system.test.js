@@ -291,5 +291,69 @@ test('SYS-15 trapModalFocus traps Tab key navigation within modal dialog', () =>
   assert.strictEqual(focused[0], 'btn1', 'First item must receive focus');
 });
 
+// --- Test 16: Repeated recovery cycle across sessions
+test('SYS-16 repeated recovery cycle: user can advance to next session and replan again without getting blocked', () => {
+  const a = boot();
+  // Cycle 1 on Day 0
+  a.els.fb.onclick();
+  a.doc.values = { practice: '45', assignment: '25', presentation: '0' };
+  a.els.rp.onclick();
+  assert.ok(a.els.behind.innerHTML.includes('id="btnAdvanceDay"'), 'Next session button should be visible');
+  // Advance to Day 1 (tomorrow becomes today)
+  a.els.btnAdvanceDay.onclick();
+  const S = a.ctx.__S(), R = a.ctx.__R();
+  assert.strictEqual(S.now, 900, 'Now should be reset to start of day window (15:00)');
+  assert.ok(R.blocks.some((b) => b.day === 0), 'New Day 0 should have scheduled priority blocks');
+  assert.ok(a.els.behind.innerHTML.includes('id="fb"'), 'Recovery button should be available for the new session');
+  // Cycle 2 on new Day 0
+  a.els.fb.onclick();
+  assert.ok(a.els.behind.innerHTML.includes('id="rp"'), 'Replan should be available for cycle 2');
+});
+
+// --- Test 17: Adjust today without double counting
+test('SYS-17 adjusting today progress rolls back previous entry without double counting', () => {
+  const a = boot();
+  a.els.fb.onclick();
+  a.doc.values = { practice: '45', assignment: '25', presentation: '0' };
+  a.els.rp.onclick();
+  assert.strictEqual(a.ctx.__S().tasks.find((t) => t.id === 'assignment').completed, 25);
+  // User realizes they did 35 minutes instead
+  a.els.btnAdjustToday.onclick();
+  assert.strictEqual(a.ctx.__S().tasks.find((t) => t.id === 'assignment').completed, 0, 'Should rollback before re-entry');
+  a.doc.values = { practice: '45', assignment: '35', presentation: '0' };
+  a.els.rp.onclick();
+  assert.strictEqual(a.ctx.__S().tasks.find((t) => t.id === 'assignment').completed, 35, 'Completed should be 35, not 60 (no double counting)');
+});
+
+// --- Test 18: Storage persistence of completed minutes
+test('SYS-18 localStorage persistence preserves completed progress across reload', () => {
+  let savedData = null;
+  const fakeStorage = {
+    getItem: (k) => savedData,
+    setItem: (k, v) => { savedData = v; },
+    removeItem: (k) => { savedData = null; }
+  };
+  const a = boot();
+  // Provide localStorage to context
+  a.ctx.localStorage = fakeStorage;
+  // Start user mode and add a task
+  a.els.useOwn.onclick();
+  a.els.tName.value = 'Essay';
+  a.els.tEst.value = '120';
+  a.els.tImp.value = '4';
+  a.els.tDays.value = '2';
+  a.els.addBtn.onclick();
+  a.els.tAvail.value = '60';
+  a.els.planBtn.onclick();
+  // Simulate completing 40 minutes in recovery
+  a.els.fb.onclick();
+  a.doc.values = { u1: '40' };
+  a.els.rp.onclick();
+  // Save occurs on render
+  assert.ok(savedData !== null, 'Data should be saved');
+  const parsed = JSON.parse(savedData);
+  assert.strictEqual(parsed.completedMap.u1, 40, 'Completed minutes should be in storage payload');
+});
+
 console.log('Product system tests: ' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
