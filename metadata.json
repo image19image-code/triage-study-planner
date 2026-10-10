@@ -1,6 +1,6 @@
 {
   "name": "Triage: Study Planner",
-  "description": "Triage is the study planner that tells the truth: see what fits, then Protect, Reduce, and Defer with confidence.",
+  "description": "Plan exams and assignments around your real available time. Identify workload shortfalls upfront, protect critical priorities, and replan when you fall behind.",
   "capabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]

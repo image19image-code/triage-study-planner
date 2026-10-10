@@ -4,7 +4,9 @@
 
 You enter what you have to do and the time you actually have. Triage tells you whether that is realistic. If it is not, it says exactly what to protect, what to reduce and what to defer, and why. If you fall behind, it re-plans from what you really did.
 
-Live demo: https://image19image-code.github.io/triage-study-planner/
+- **Primary Canonical Website:** https://image19image-code.github.io/triage-study-planner/
+- **Sitemap:** https://image19image-code.github.io/triage-study-planner/sitemap.xml
+- **Repository:** https://github.com/image19image-code/triage-study-planner
 
 ## The problem
 
@@ -97,6 +99,13 @@ Labelled fields, keyboard entry (Enter adds a task), visible focus, errors that 
 | **Recovery & Multi-Day Replanning** | Calm, shame-free replanning: enter actual completed minutes, rebuild remaining work, adjust entries without double-counting, and advance across successive days. |
 | **Local-First & Private** | Zero accounts, zero cloud sync, zero tracking. Auto-saves in browser localStorage with progress persistence, JSON export/import, and Print/PDF backup. |
 
+## Technical SEO & Social Share Previews
+ 
+- **Canonical URL:** `https://image19image-code.github.io/triage-study-planner/`
+- **Sitemap:** Clean, single-origin XML sitemap at `sitemap.xml`.
+- **Social Sharing Asset:** Verified vector OpenGraph card `triage-og.svg`.
+- **Search Metadata:** High-intent title and description targeted to realistic study planning.
+ 
 ## Known limitations
 
 - One available-minutes value is applied to every day in the input form (though the underlying engine supports arbitrary per-day capacity arrays).
